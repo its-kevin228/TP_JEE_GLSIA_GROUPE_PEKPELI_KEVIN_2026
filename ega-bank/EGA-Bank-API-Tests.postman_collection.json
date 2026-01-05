@@ -1,0 +1,499 @@
+{
+	"info": {
+		"_postman_id": "ega-bank-api-tests",
+		"name": "EGA Bank API Tests",
+		"description": "Collection complète pour tester toutes les APIs EGA Bank",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Clients",
+			"item": [
+				{
+					"name": "1. Créer Client 1",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nom\": \"KOUASSI\",\n  \"prenom\": \"Kofi\",\n  \"dateNaissance\": \"1990-05-15\",\n  \"sexe\": \"M\",\n  \"adresse\": \"Cocody Angré, Abidjan\",\n  \"telephone\": \"+2250708123456\",\n  \"email\": \"kofi.kouassi@example.com\",\n  \"nationalite\": \"Ivoirienne\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/clients",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["api", "clients"]
+						}
+					}
+				},
+				{
+					"name": "2. Créer Client 2",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nom\": \"TRAORE\",\n  \"prenom\": \"Aminata\",\n  \"dateNaissance\": \"1995-08-20\",\n  \"sexe\": \"F\",\n  \"adresse\": \"Plateau, Abidjan\",\n  \"telephone\": \"+2250709987654\",\n  \"email\": \"aminata.traore@example.com\",\n  \"nationalite\": \"Ivoirienne\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/clients",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["api", "clients"]
+						}
+					}
+				},
+				{
+					"name": "3. Liste tous les clients",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/clients",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["api", "clients"]
+						}
+					}
+				},
+				{
+					"name": "4. Récupérer client par ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/clients/1",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["api", "clients", "1"]
+						}
+					}
+				},
+				{
+					"name": "5. Modifier un client",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nom\": \"KOUASSI\",\n  \"prenom\": \"Kofi\",\n  \"dateNaissance\": \"1990-05-15\",\n  \"sexe\": \"M\",\n  \"adresse\": \"Cocody Riviera, Abidjan\",\n  \"telephone\": \"+2250708123456\",\n  \"email\": \"kofi.kouassi@example.com\",\n  \"nationalite\": \"Ivoirienne\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/clients/1",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["api", "clients", "1"]
+						}
+					}
+				},
+				{
+					"name": "6. Rechercher clients",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/clients/search?query=KOUASSI",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["api", "clients", "search"],
+							"query": [
+								{
+									"key": "query",
+									"value": "KOUASSI"
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Comptes",
+			"item": [
+				{
+					"name": "1. Créer Compte Courant",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"type\": \"COURANT\",\n  \"clientId\": 1,\n  \"decouvertAutorise\": 50000\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/comptes",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["api", "comptes"]
+						}
+					}
+				},
+				{
+					"name": "2. Créer Compte Épargne",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"type\": \"EPARGNE\",\n  \"clientId\": 1,\n  \"tauxInteret\": 3.5\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/comptes",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["api", "comptes"]
+						}
+					}
+				},
+				{
+					"name": "3. Créer Compte pour Client 2",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"type\": \"COURANT\",\n  \"clientId\": 2,\n  \"decouvertAutorise\": 30000\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/comptes",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["api", "comptes"]
+						}
+					}
+				},
+				{
+					"name": "4. Liste tous les comptes",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/comptes",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["api", "comptes"]
+						}
+					}
+				},
+				{
+					"name": "5. Récupérer compte par ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/comptes/1",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["api", "comptes", "1"]
+						}
+					}
+				},
+				{
+					"name": "6. Comptes d'un client",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/comptes/client/1",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["api", "comptes", "client", "1"]
+						}
+					}
+				},
+				{
+					"name": "7. Récupérer compte par numéro IBAN",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/comptes/numero/CI93123456789001234567890",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["api", "comptes", "numero", "CI93123456789001234567890"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Transactions",
+			"item": [
+				{
+					"name": "1. Dépôt sur compte 1",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"numeroCompte\": \"CI93123456789001234567890\",\n  \"montant\": 100000,\n  \"description\": \"Dépôt initial\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/transactions/depot",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["api", "transactions", "depot"]
+						}
+					}
+				},
+				{
+					"name": "2. Dépôt sur compte 2",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"numeroCompte\": \"CI93123456789001234567891\",\n  \"montant\": 50000,\n  \"description\": \"Versement épargne\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/transactions/depot",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["api", "transactions", "depot"]
+						}
+					}
+				},
+				{
+					"name": "3. Retrait",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"numeroCompte\": \"CI93123456789001234567890\",\n  \"montant\": 25000,\n  \"description\": \"Retrait espèces\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/transactions/retrait",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["api", "transactions", "retrait"]
+						}
+					}
+				},
+				{
+					"name": "4. Virement entre comptes",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"compteSource\": \"CI93123456789001234567890\",\n  \"compteDestinataire\": \"CI93123456789001234567891\",\n  \"montant\": 15000,\n  \"description\": \"Virement épargne\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/transactions/virement",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["api", "transactions", "virement"]
+						}
+					}
+				},
+				{
+					"name": "5. Historique d'un compte",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/transactions/compte/CI93123456789001234567890",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["api", "transactions", "compte", "CI93123456789001234567890"]
+						}
+					}
+				},
+				{
+					"name": "6. Transactions par période",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/transactions/compte/CI93123456789001234567890/periode?dateDebut=2026-01-01T00:00:00&dateFin=2026-12-31T23:59:59",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["api", "transactions", "compte", "CI93123456789001234567890", "periode"],
+							"query": [
+								{
+									"key": "dateDebut",
+									"value": "2026-01-01T00:00:00"
+								},
+								{
+									"key": "dateFin",
+									"value": "2026-12-31T23:59:59"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "7. Toutes les transactions",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/transactions",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["api", "transactions"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Tests d'erreurs",
+			"item": [
+				{
+					"name": "1. Créer client avec email existant",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nom\": \"TEST\",\n  \"prenom\": \"Test\",\n  \"dateNaissance\": \"1990-01-01\",\n  \"sexe\": \"M\",\n  \"adresse\": \"Test\",\n  \"telephone\": \"+2250708111111\",\n  \"email\": \"kofi.kouassi@example.com\",\n  \"nationalite\": \"Ivoirienne\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/clients",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["api", "clients"]
+						}
+					}
+				},
+				{
+					"name": "2. Retrait avec solde insuffisant",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"numeroCompte\": \"CI93123456789001234567890\",\n  \"montant\": 999999999,\n  \"description\": \"Test solde insuffisant\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/transactions/retrait",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["api", "transactions", "retrait"]
+						}
+					}
+				},
+				{
+					"name": "3. Client inexistant",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/clients/9999",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["api", "clients", "9999"]
+						}
+					}
+				},
+				{
+					"name": "4. Validation - Email invalide",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nom\": \"TEST\",\n  \"prenom\": \"Test\",\n  \"dateNaissance\": \"1990-01-01\",\n  \"sexe\": \"M\",\n  \"adresse\": \"Test\",\n  \"telephone\": \"+2250708111111\",\n  \"email\": \"email-invalide\",\n  \"nationalite\": \"Ivoirienne\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/clients",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["api", "clients"]
+						}
+					}
+				}
+			]
+		}
+	]
+}
