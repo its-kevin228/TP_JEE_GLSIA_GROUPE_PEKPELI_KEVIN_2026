@@ -15,7 +15,12 @@ import java.util.List;
 @Table(name = "comptes")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "type_compte", discriminatorType = DiscriminatorType.STRING)
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString(exclude = {"client", "transactions"})
+@EqualsAndHashCode(exclude = {"client", "transactions"})
 public abstract class Compte {
 
     @Id

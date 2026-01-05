@@ -9,11 +9,13 @@ import java.math.BigDecimal;
 
 @Entity
 @DiscriminatorValue("EPARGNE")
-@Data
-@EqualsAndHashCode(callSuper = true)
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
 public class CompteEpargne extends Compte {
 
     @Column(name = "taux_interet", precision = 5, scale = 2)

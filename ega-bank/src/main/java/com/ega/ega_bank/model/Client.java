@@ -10,10 +10,13 @@ import java.util.List;
 
 @Entity
 @Table(name = "clients")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString(exclude = "comptes")
+@EqualsAndHashCode(exclude = "comptes")
 public class Client {
 
     @Id
