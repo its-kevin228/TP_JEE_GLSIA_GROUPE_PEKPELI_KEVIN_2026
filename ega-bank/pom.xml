@@ -65,8 +65,12 @@
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<optional>true</optional>
-		</dependency>
-		<dependency>
+		</dependency>	<!-- IBAN4J pour generer les numeros de compte IBAN -->
+	<dependency>
+		<groupId>org.iban4j</groupId>
+		<artifactId>iban4j</artifactId>
+		<version>3.2.10-RELEASE</version>
+	</dependency>		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa-test</artifactId>
 			<scope>test</scope>
