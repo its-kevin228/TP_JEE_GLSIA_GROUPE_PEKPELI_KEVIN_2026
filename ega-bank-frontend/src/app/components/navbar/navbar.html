@@ -1,0 +1,31 @@
+<nav class="bg-gradient-to-r from-blue-600 to-blue-800 shadow-lg">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between items-center h-16">
+      <!-- Logo et nom -->
+      <div class="flex items-center">
+        <svg class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+        </svg>
+        <span class="ml-3 text-2xl font-bold text-white">EGA Bank</span>
+      </div>
+
+      <!-- Menu de navigation -->
+      <div class="hidden md:block">
+        <div class="ml-10 flex items-baseline space-x-4">
+          <a routerLink="/home" routerLinkActive="bg-blue-900" class="text-white hover:bg-blue-700 px-3 py-2 rounded-md text-sm font-medium transition-colors">
+            Accueil
+          </a>
+          <a routerLink="/clients" routerLinkActive="bg-blue-900" class="text-white hover:bg-blue-700 px-3 py-2 rounded-md text-sm font-medium transition-colors">
+            Clients
+          </a>
+          <a routerLink="/comptes" routerLinkActive="bg-blue-900" class="text-white hover:bg-blue-700 px-3 py-2 rounded-md text-sm font-medium transition-colors">
+            Comptes
+          </a>
+          <a routerLink="/transactions" routerLinkActive="bg-blue-900" class="text-white hover:bg-blue-700 px-3 py-2 rounded-md text-sm font-medium transition-colors">
+            Transactions
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
