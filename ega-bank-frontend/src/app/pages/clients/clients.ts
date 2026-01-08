@@ -38,7 +38,7 @@ export class Clients implements OnInit {
 
   deleteClient(id: number | undefined): void {
     if (!id) return;
-    
+
     if (confirm('Êtes-vous sûr de vouloir supprimer ce client ?')) {
       this.clientService.deleteClient(id).subscribe({
         next: () => {

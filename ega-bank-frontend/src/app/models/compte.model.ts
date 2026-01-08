@@ -7,10 +7,10 @@ export interface Compte {
   clientId: number;
   clientNom?: string;
   clientPrenom?: string;
-  
+
   // Pour compte épargne
   tauxInteret?: number;
-  
+
   // Pour compte courant
   decouvertAutorise?: number;
 }
