@@ -1,9 +1,17 @@
 package com.ega.ega_bank.dto;
 
-import jakarta.validation.constraints.*;
-import lombok.*;
-
 import java.time.LocalDate;
+
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
@@ -45,5 +53,5 @@ public class ClientDTO {
     @Size(min = 2, max = 50, message = "La nationalité doit contenir entre 2 et 50 caractères")
     private String nationalite;
 
-    private int nombreComptes;
+    private Integer nombreComptes;
 }

@@ -1,15 +1,36 @@
 package com.ega.ega_bank.model;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
-import lombok.*;
-import org.iban4j.CountryCode;
-import org.iban4j.Iban;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.iban4j.CountryCode;
+import org.iban4j.Iban;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorColumn;
+import jakarta.persistence.DiscriminatorType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "comptes")
@@ -55,13 +76,12 @@ public abstract class Compte {
         }
     }
 
-    // Génération d'un numéro IBAN pour la Côte d'Ivoire (CI)
+    // Génération d'un numéro IBAN (utilise Allemagne car Côte d'Ivoire non supporté par iban4j)
     private String genererNumeroCompte() {
         Iban iban = new Iban.Builder()
-                .countryCode(CountryCode.CI) // Côte d'Ivoire
-                .bankCode("12345")
-                .branchCode("67890")
-                .accountNumber(String.format("%011d", System.currentTimeMillis() % 100000000000L))
+                .countryCode(CountryCode.DE) // Allemagne
+                .bankCode("12345678")
+                .accountNumber(String.format("%010d", System.currentTimeMillis() % 10000000000L))
                 .build();
         return iban.toString();
     }
