@@ -1,338 +1,312 @@
-# ✅ EGA Bank - Projet Complet
+# 🚀 Guide de Démarrage EGA Bank
 
-## 📦 Contenu du Projet
+## 📋 Prérequis
 
-Ce projet contient une application bancaire complète avec backend Spring Boot et frontend Angular.
+Avant de démarrer l'application, assurez-vous d'avoir installé:
 
----
+- ✅ **Java 17+** (pour le backend Spring Boot)
+- ✅ **Node.js 18+** et **npm** (pour le frontend Angular)
+- ✅ **PostgreSQL 14+** (base de données)
+- ✅ **Maven** (inclus dans le projet via Maven Wrapper)
 
-## 📂 Structure des Dossiers
+## 🗄️ Configuration de la base de données
 
-```
-TP_JEE_GLSIA_GROUPE_PEKPELI_KEVIN_2026/
-├── ega-bank/                    # Backend Spring Boot
-│   ├── src/main/java/           # Code source Java
-│   ├── src/main/resources/      # Configuration
-│   ├── src/test/                # Tests
-│   ├── pom.xml                  # Dépendances Maven
-│   └── README-TESTS.md          # Tests Postman
-│
-├── ega-bank-frontend/           # Frontend Angular
-│   ├── src/app/                 # Code source Angular
-│   ├── src/environments/        # Configuration
-│   ├── angular.json             # Config Angular
-│   ├── package.json             # Dépendances npm
-│   ├── proxy.conf.json          # Proxy pour l'API
-│   └── README.md                # Documentation
-│
-├── QUICKSTART.md                # Guide de démarrage rapide
-├── ARCHITECTURE.md              # Documentation architecture
-└── USER_GUIDE.md                # Guide utilisateur
+### 1. Créer la base de données PostgreSQL
+
+```sql
+-- Se connecter à PostgreSQL
+psql -U postgres
+
+-- Créer la base de données
+CREATE DATABASE egabank;
+
+-- Créer un utilisateur (optionnel)
+CREATE USER egabank_user WITH PASSWORD 'votremotdepasse';
+
+-- Donner les privilèges
+GRANT ALL PRIVILEGES ON DATABASE egabank TO egabank_user;
 ```
 
----
+### 2. Configuration du backend
 
-## 🎯 Fonctionnalités Implémentées
+Si vous utilisez des identifiants différents, modifiez `backend/ega-bank/src/main/resources/application.properties`:
 
-### ✅ Gestion des Clients
-- [x] Créer un nouveau client
-- [x] Modifier un client existant
-- [x] Supprimer un client
-- [x] Lister tous les clients
-- [x] Rechercher des clients
-- [x] Voir les détails d'un client
+```properties
+spring.datasource.url=jdbc:postgresql://localhost:5432/egabank
+spring.datasource.username=postgres
+spring.datasource.password=root  # Changez selon vos paramètres
+```
 
-### ✅ Gestion des Comptes
-- [x] Créer un compte courant (avec découvert)
-- [x] Créer un compte épargne (avec taux d'intérêt)
-- [x] Lister tous les comptes
-- [x] Voir les détails d'un compte
-- [x] Supprimer un compte
-- [x] Lister les comptes d'un client
+## 🔧 Installation
 
-### ✅ Opérations Bancaires
-- [x] Effectuer un dépôt
-- [x] Effectuer un retrait (avec vérification du solde)
-- [x] Effectuer un virement entre comptes
-- [x] Consulter l'historique des transactions
-- [x] Afficher le solde après chaque transaction
+### Backend (Spring Boot)
 
----
-
-## 🛠️ Technologies Utilisées
-
-### Backend
-- **Framework**: Spring Boot 3.x
-- **Langage**: Java 21
-- **ORM**: Spring Data JPA / Hibernate
-- **Base de données**: H2 (en mémoire)
-- **Build**: Maven
-- **API**: RESTful
-- **Validation**: Bean Validation
-- **Sécurité**: CORS configuré
-
-### Frontend
-- **Framework**: Angular 21
-- **Langage**: TypeScript
-- **Architecture**: Standalone Components
-- **Réactivité**: Angular Signals
-- **Formulaires**: Reactive Forms
-- **Routing**: Angular Router
-- **HTTP**: HttpClient
-- **Styles**: CSS moderne avec animations
-
----
-
-## 🚀 Comment Démarrer
-
-### Prérequis
-- Java 21 ou supérieur
-- Node.js 18 ou supérieur
-- npm 9 ou supérieur
-
-### Étape 1: Démarrer le Backend
 ```bash
-cd ega-bank
+cd backend/ega-bank
+
+# Les dépendances seront téléchargées automatiquement au démarrage
+# Ou pour les télécharger manuellement:
+./mvnw clean install
+```
+
+### Frontend (Angular)
+
+```bash
+cd frontend/ega-bank-ui
+
+# Installer les dépendances
+npm install
+```
+
+## ▶️ Démarrage de l'application
+
+### Option 1: Démarrage séparé (Recommandé pour le développement)
+
+#### Terminal 1 - Backend
+```bash
+cd backend/ega-bank
 ./mvnw spring-boot:run
 ```
-Backend disponible sur: http://localhost:8080
 
-### Étape 2: Démarrer le Frontend
+Le backend sera accessible sur: **http://localhost:8080**
+
+Documentation Swagger: **http://localhost:8080/swagger-ui.html**
+
+#### Terminal 2 - Frontend
 ```bash
-cd ega-bank-frontend
-npm install
+cd frontend/ega-bank-ui
+
+# Option A: Avec proxy (recommandé)
+npm start -- --proxy-config proxy.conf.json
+
+# Option B: Sans proxy
 npm start
 ```
-Frontend disponible sur: http://localhost:4200
 
-**Voir [QUICKSTART.md](QUICKSTART.md) pour plus de détails**
+Le frontend sera accessible sur: **http://localhost:4200**
 
----
+### Option 2: Démarrage avec scripts (Windows)
 
-## 📚 Documentation Disponible
+Créez deux fichiers batch:
 
-### [QUICKSTART.md](QUICKSTART.md)
-Guide de démarrage en 3 étapes avec commandes et dépannage
-
-### [ARCHITECTURE.md](ARCHITECTURE.md)
-Documentation technique complète:
-- Architecture backend et frontend
-- Modèles de données
-- API Endpoints
-- Flux de données
-- Configuration
-
-### [USER_GUIDE.md](USER_GUIDE.md)
-Guide utilisateur détaillé:
-- Navigation dans l'application
-- Utilisation de chaque fonctionnalité
-- Captures d'écran et explications
-- Astuces et raccourcis
-
-### Backend: [ega-bank/README-TESTS.md](ega-bank/README-TESTS.md)
-Tests API avec Postman
-
-### Frontend: [ega-bank-frontend/README.md](ega-bank-frontend/README.md)
-Documentation spécifique Angular
-
----
-
-## 📋 API Endpoints
-
-### Clients
-```
-POST   /api/clients              # Créer
-GET    /api/clients              # Lister tous
-GET    /api/clients/{id}         # Obtenir par ID
-PUT    /api/clients/{id}         # Modifier
-DELETE /api/clients/{id}         # Supprimer
-GET    /api/clients/search       # Rechercher
+**start-backend.bat**
+```batch
+@echo off
+cd backend\ega-bank
+call mvnw.cmd spring-boot:run
 ```
 
-### Comptes
-```
-POST   /api/comptes              # Créer
-GET    /api/comptes              # Lister tous
-GET    /api/comptes/{id}         # Obtenir par ID
-DELETE /api/comptes/{id}         # Supprimer
-GET    /api/comptes/numero/{num} # Par numéro
-GET    /api/comptes/client/{id}  # Par client
+**start-frontend.bat**
+```batch
+@echo off
+cd frontend\ega-bank-ui
+call npm start -- --proxy-config proxy.conf.json
 ```
 
-### Transactions
+Exécutez les deux fichiers dans des terminaux séparés.
+
+## ✅ Vérification de la connexion
+
+### 1. Vérifier le backend
+
+Ouvrez votre navigateur et accédez à:
+- API Health: http://localhost:8080/actuator/health (si actuator est activé)
+- Swagger UI: http://localhost:8080/swagger-ui.html
+
+### 2. Tester la connexion Backend-Frontend
+
+Accédez à la page de test:
+**http://localhost:4200/connection-test**
+
+Cette page vous permet de:
+- ✅ Vérifier l'état de la connexion au backend
+- ✅ Tester l'inscription et la connexion
+- ✅ Tester les appels API (clients, comptes, transactions)
+- 📋 Voir les logs détaillés en temps réel
+
+### 3. Vérification manuelle avec Swagger
+
+1. Accédez à http://localhost:8080/swagger-ui.html
+2. Testez l'endpoint `/api/auth/register` pour créer un utilisateur
+3. Testez l'endpoint `/api/auth/login` pour vous connecter
+4. Copiez le token JWT retourné
+5. Cliquez sur "Authorize" dans Swagger
+6. Entrez `Bearer <votre-token>`
+7. Testez les autres endpoints protégés
+
+## 🔐 Créer un utilisateur de test
+
+### Via Swagger UI
+1. Accédez à http://localhost:8080/swagger-ui.html
+2. Allez dans la section "Authentification"
+3. Utilisez l'endpoint POST `/api/auth/register`:
+
+```json
+{
+  "username": "admin",
+  "email": "admin@egabank.com",
+  "password": "admin123"
+}
 ```
-POST   /api/transactions/depot     # Dépôt
-POST   /api/transactions/retrait   # Retrait
-POST   /api/transactions/virement  # Virement
-GET    /api/transactions           # Toutes
-GET    /api/transactions/compte/{id} # Par compte
+
+### Via cURL
+```bash
+curl -X POST http://localhost:8080/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "username": "admin",
+    "email": "admin@egabank.com",
+    "password": "admin123"
+  }'
 ```
 
----
+### Via l'interface Angular
+1. Accédez à http://localhost:4200/register
+2. Remplissez le formulaire
+3. Cliquez sur "S'inscrire"
 
-## 🎨 Captures d'Écran
 
-### Interface Principale
-- Barre de navigation violette moderne
-- 3 sections: Clients, Comptes, Transactions
-- Design responsive (mobile, tablette, desktop)
 
-### Fonctionnalités Visuelles
-- Tableaux triables
-- Formulaires avec validation en temps réel
-- Messages de succès/erreur
-- Badges colorés pour les types
-- Animations fluides
-
----
-
-## 🧪 Tests
+## 🛠️ Commandes utiles
 
 ### Backend
-Collection Postman disponible: `EGA-Bank-API-Tests.postman_collection.json`
+
+```bash
+# Démarrer l'application
+./mvnw spring-boot:run
+
+# Compiler sans exécuter les tests
+./mvnw clean install -DskipTests
+
+# Exécuter les tests
+./mvnw test
+
+# Nettoyer les builds
+./mvnw clean
+
+# Générer le JAR de production
+./mvnw package
+```
 
 ### Frontend
+
 ```bash
-cd ega-bank-frontend
+# Démarrer en mode développement
+npm start
+
+# Démarrer avec proxy
+npm start -- --proxy-config proxy.conf.json
+
+# Builder pour la production
+npm run build
+
+# Exécuter les tests
 npm test
+
+# Linter le code
+npm run lint
 ```
 
----
+## 🐛 Résolution des problèmes courants
 
-## 📊 Base de Données
+### Problème: Backend ne démarre pas
 
-### Configuration H2 (Développement)
-- **Type**: En mémoire
-- **URL**: jdbc:h2:mem:egabank
-- **Console H2**: http://localhost:8080/h2-console
-- **Username**: sa
-- **Password**: (vide)
+**Erreur**: `Cannot create PoolableConnectionFactory`
 
-### Schéma
-```sql
-Tables:
-- client           # Clients
-- compte           # Comptes (table parent)
-- compte_courant   # Comptes courants
-- compte_epargne   # Comptes épargne
-- transaction      # Transactions
+**Solution**:
+1. Vérifiez que PostgreSQL est démarré
+2. Vérifiez les identifiants dans `application.properties`
+3. Vérifiez que la base de données `egabank` existe
+
+### Problème: Frontend ne trouve pas le backend (CORS)
+
+**Erreur**: `Access to XMLHttpRequest has been blocked by CORS policy`
+
+**Solutions**:
+1. Vérifiez que le backend est démarré sur http://localhost:8080
+2. Utilisez le proxy: `npm start -- --proxy-config proxy.conf.json`
+3. Vérifiez la configuration CORS dans `SecurityConfig.java`
+
+### Problème: Erreur 401 Unauthorized
+
+**Solution**:
+1. Assurez-vous d'être connecté
+2. Vérifiez que le token est bien stocké dans localStorage
+3. Vérifiez que l'intercepteur JWT est configuré (`app.config.ts`)
+
+### Problème: Port déjà utilisé
+
+**Backend (8080)**:
+```bash
+# Windows
+netstat -ano | findstr :8080
+taskkill /PID <PID> /F
+
+# Linux/Mac
+lsof -ti:8080 | xargs kill -9
 ```
 
----
+**Frontend (4200)**:
+```bash
+# Windows
+netstat -ano | findstr :4200
+taskkill /PID <PID> /F
 
-## 🔧 Configuration
-
-### Backend (application.properties)
-```properties
-server.port=8080
-spring.datasource.url=jdbc:h2:mem:egabank
-spring.jpa.hibernate.ddl-auto=create-drop
+# Linux/Mac
+lsof -ti:4200 | xargs kill -9
 ```
 
-### Frontend (environment.ts)
-```typescript
-apiUrl: 'http://localhost:8080/api'
-```
+## 📚 Documentation complémentaire
 
-### Proxy (proxy.conf.json)
-Redirige `/api` vers `http://localhost:8080`
+- 📖 [Guide de connexion Backend-Frontend](docs/BACKEND_FRONTEND_CONNECTION.md)
+- 📖 [Swagger UI](http://localhost:8080/swagger-ui.html) - Documentation API interactive
+- 📖 [Spring Boot Documentation](https://spring.io/projects/spring-boot)
+- 📖 [Angular Documentation](https://angular.dev/)
 
----
+## 🎯 Endpoints API disponibles
 
-## ✨ Points Forts du Projet
+### Authentification
+- `POST /api/auth/register` - Inscription
+- `POST /api/auth/login` - Connexion
+- `POST /api/auth/refresh` - Rafraîchir le token
 
-### Architecture
-- ✅ Séparation claire backend/frontend
-- ✅ Architecture RESTful
-- ✅ Modèle de données cohérent
-- ✅ Gestion d'erreurs robuste
+### Clients (authentification requise)
+- `GET /api/clients` - Liste des clients (pagination)
+- `GET /api/clients/search?q=terme` - Recherche
+- `GET /api/clients/{id}` - Détails d'un client
+- `GET /api/clients/{id}/details` - Client avec comptes
+- `POST /api/clients` - Créer un client
+- `PUT /api/clients/{id}` - Modifier un client
+- `DELETE /api/clients/{id}` - Supprimer un client
 
-### Code Quality
-- ✅ Code propre et commenté
-- ✅ Validation des données
-- ✅ Gestion des exceptions
-- ✅ DTOs pour l'API
+### Comptes (authentification requise)
+- `GET /api/accounts` - Liste des comptes (pagination)
+- `GET /api/accounts/{numeroCompte}` - Détails d'un compte
+- `GET /api/accounts/client/{clientId}` - Comptes d'un client
+- `POST /api/accounts` - Créer un compte
+- `DELETE /api/accounts/{id}` - Supprimer un compte
+- `PUT /api/accounts/{id}/deactivate` - Désactiver un compte
 
-### UX/UI
-- ✅ Interface moderne et intuitive
-- ✅ Feedback utilisateur clair
-- ✅ Design responsive
-- ✅ Navigation fluide
+### Transactions (authentification requise)
+- `POST /api/transactions/{numeroCompte}/deposit` - Dépôt
+- `POST /api/transactions/{numeroCompte}/withdraw` - Retrait
+- `POST /api/transactions/transfer` - Virement
+- `GET /api/transactions/{numeroCompte}/history` - Historique
+- `GET /api/transactions/{numeroCompte}` - Toutes les transactions
 
-### Documentation
-- ✅ Documentation complète
-- ✅ Guides de démarrage
-- ✅ Architecture documentée
-- ✅ Guide utilisateur détaillé
+## 🚀 Prochaines étapes
 
----
-
-## 🚀 Évolutions Possibles
-
-### Fonctionnalités
-- [ ] Authentification JWT
-- [ ] Gestion des rôles (admin, user)
-- [ ] Dashboard avec graphiques
-- [ ] Export PDF des relevés
-- [ ] Notifications email
-- [ ] Multi-devise
-
-### Technique
-- [ ] PostgreSQL en production
-- [ ] Cache avec Redis
-- [ ] Tests automatisés (JUnit, Cypress)
-- [ ] CI/CD avec GitHub Actions
-- [ ] Conteneurisation Docker
-- [ ] Monitoring et logs
-
----
-
-## 👥 Auteurs
-
-**Groupe**: PEKPELI KEVIN
-**Année**: 2026
-**Formation**: GLSIA - JEE
-
----
+1. ✅ Configuration de base terminée
+2. 🔄 Test de la connexion via http://localhost:4200/connection-test
+3. 👤 Création d'un utilisateur de test
+4. 🎨 Finalisation de l'interface utilisateur
+5. 🧪 Tests d'intégration
+6. 📦 Déploiement en production
 
 ## 📞 Support
 
-### Problèmes Courants
-
-**Backend ne démarre pas**
-- Vérifier Java 21: `java -version`
-- Vérifier le port 8080 est libre
-
-**Frontend ne démarre pas**
-- Vérifier Node.js: `node -v`
-- Réinstaller: `npm install`
-- Vérifier le port 4200 est libre
-
-**Erreur de connexion API**
-- Backend doit être démarré
-- Vérifier l'URL dans environment.ts
-- Vérifier proxy.conf.json
-
----
-
-## 📄 Licence
-
-Projet académique - TP JEE GLSIA 2026
-
----
-
-## 🎓 Objectifs Pédagogiques Atteints
-
-- ✅ Maîtrise de Spring Boot et JPA
-- ✅ Architecture REST
-- ✅ Développement frontend Angular
-- ✅ Intégration frontend/backend
-- ✅ Gestion de base de données
-- ✅ Validation et gestion d'erreurs
-- ✅ Documentation technique
-
----
-
-**Projet EGA Bank - Version 1.0 - Janvier 2026**
-
-🎉 **Application complète et fonctionnelle!**
+Pour toute question ou problème:
+1. Consultez la documentation dans `/docs`
+2. Vérifiez les logs du backend dans la console
+3. Vérifiez la console du navigateur (F12)
+4. Utilisez la page de test: http://localhost:4200/connection-test
