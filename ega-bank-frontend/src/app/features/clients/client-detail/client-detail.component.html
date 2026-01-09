@@ -1,0 +1,116 @@
+<div class="container">
+  <div class="header">
+    <h1>Détails du Client</h1>
+    <div class="actions">
+      @if (client()) {
+        <a [routerLink]="['/clients', client()!.id, 'edit']" class="btn btn-warning">Modifier</a>
+      }
+      <a routerLink="/clients" class="btn btn-secondary">Retour</a>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="loading">Chargement...</div>
+  }
+
+  @if (error()) {
+    <div class="error">{{ error() }}</div>
+  }
+
+  @if (client()) {
+    <div class="detail-card">
+      <h2>Informations Personnelles</h2>
+      <div class="info-grid">
+        <div class="info-item">
+          <span class="label">ID:</span>
+          <span class="value">{{ client()!.id }}</span>
+        </div>
+        <div class="info-item">
+          <span class="label">Nom:</span>
+          <span class="value">{{ client()!.nom }}</span>
+        </div>
+        <div class="info-item">
+          <span class="label">Prénom:</span>
+          <span class="value">{{ client()!.prenom }}</span>
+        </div>
+        <div class="info-item">
+          <span class="label">Date de Naissance:</span>
+          <span class="value">{{ client()!.dateNaissance }}</span>
+        </div>
+        <div class="info-item">
+          <span class="label">Sexe:</span>
+          <span class="value">{{ client()!.sexe }}</span>
+        </div>
+        <div class="info-item">
+          <span class="label">Téléphone:</span>
+          <span class="value">{{ client()!.telephone }}</span>
+        </div>
+        <div class="info-item full-width">
+          <span class="label">Email:</span>
+          <span class="value">{{ client()!.email }}</span>
+        </div>
+        <div class="info-item full-width">
+          <span class="label">Adresse:</span>
+          <span class="value">{{ client()!.adresse }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="detail-card">
+      <div class="card-header">
+        <h2>Comptes Bancaires</h2>
+        @if (client()) {
+          <a [routerLink]="['/comptes/new']" [queryParams]="{clientId: client()!.id}" class="btn btn-primary btn-sm">
+            + Nouveau Compte
+          </a>
+        }
+      </div>
+
+      @if (comptes().length === 0) {
+        <div class="empty">Aucun compte associé</div>
+      } @else {
+        <div class="comptes-summary">
+          <div class="summary-item">
+            <span class="summary-label">Nombre de comptes:</span>
+            <span class="summary-value">{{ comptes().length }}</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">Solde Total:</span>
+            <span class="summary-value total">{{ getTotalSolde() | number:'1.2-2' }} FCFA</span>
+          </div>
+        </div>
+
+        <div class="table-container">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>N° Compte</th>
+                <th>Type</th>
+                <th>Solde</th>
+                <th>Date Création</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (compte of comptes(); track compte.id) {
+                <tr>
+                  <td>{{ compte.numeroCompte }}</td>
+                  <td>
+                    <span [class]="'badge badge-' + (compte.type === 'COURANT' ? 'primary' : 'success')">
+                      {{ compte.type }}
+                    </span>
+                  </td>
+                  <td>{{ compte.solde | number:'1.2-2' }} FCFA</td>
+                  <td>{{ compte.dateCreation | date:'dd/MM/yyyy' }}</td>
+                  <td>
+                    <a [routerLink]="['/comptes', compte.id]" class="btn btn-sm btn-info">Détails</a>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+  }
+</div>

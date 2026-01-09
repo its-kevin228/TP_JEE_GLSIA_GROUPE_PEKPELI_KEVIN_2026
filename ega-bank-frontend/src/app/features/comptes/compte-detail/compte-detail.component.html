@@ -1,0 +1,110 @@
+<div class="container">
+  <div class="header">
+    <h1>Détails du Compte</h1>
+    <div class="actions">
+      @if (compte()) {
+        <a [routerLink]="['/transactions/operation']" [queryParams]="{numeroCompte: compte()!.numeroCompte}" class="btn btn-success">
+          Opération
+        </a>
+      }
+      <a routerLink="/comptes" class="btn btn-secondary">Retour</a>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="loading">Chargement...</div>
+  }
+
+  @if (error()) {
+    <div class="error">{{ error() }}</div>
+  }
+
+  @if (compte()) {
+    <div class="compte-card">
+      <div class="compte-header">
+        <div class="compte-info">
+          <h2>{{ compte()!.numeroCompte }}</h2>
+          <span [class]="'badge badge-' + (compte()!.type === 'COURANT' ? 'primary' : 'success')">
+            {{ compte()!.type }}
+          </span>
+        </div>
+        <div class="solde-display">
+          <div class="solde-label">Solde Actuel</div>
+          <div class="solde-amount">{{ compte()!.solde | number:'1.2-2' }} FCFA</div>
+        </div>
+      </div>
+
+      <div class="compte-details">
+        <div class="detail-row">
+          <span class="label">Client:</span>
+          <span class="value">
+            <a [routerLink]="['/clients', compte()!.clientId]">
+              {{ compte()!.clientNom }} {{ compte()!.clientPrenom }}
+            </a>
+          </span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Date de Création:</span>
+          <span class="value">{{ compte()!.dateCreation | date:'dd/MM/yyyy HH:mm' }}</span>
+        </div>
+
+        @if (compte()!.type === 'COURANT' && compte()!.decouvertAutorise !== null) {
+          <div class="detail-row">
+            <span class="label">Découvert Autorisé:</span>
+            <span class="value">{{ compte()!.decouvertAutorise | number:'1.2-2' }} FCFA</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Disponible Total:</span>
+            <span class="value highlight">{{ compte()!.solde + compte()!.decouvertAutorise! | number:'1.2-2' }} FCFA</span>
+          </div>
+        }
+
+        @if (compte()!.type === 'EPARGNE' && compte()!.tauxInteret !== null) {
+          <div class="detail-row">
+            <span class="label">Taux d'Intérêt:</span>
+            <span class="value">{{ compte()!.tauxInteret }}% par an</span>
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="transactions-section">
+      <h2>Historique des Transactions</h2>
+
+      @if (transactions().length === 0) {
+        <div class="empty">Aucune transaction pour ce compte</div>
+      } @else {
+        <div class="transactions-list">
+          @for (transaction of transactions(); track transaction.id) {
+            <div [class]="'transaction-item ' + getTransactionClass(transaction.typeTransaction)">
+              <div class="transaction-icon">{{ getTransactionIcon(transaction.typeTransaction) }}</div>
+              <div class="transaction-content">
+                <div class="transaction-header">
+                  <span class="transaction-type">{{ transaction.typeTransaction }}</span>
+                  <span class="transaction-amount">
+                    @if (transaction.typeTransaction === 'DEPOT') {
+                      <span class="positive">+{{ transaction.montant | number:'1.2-2' }} FCFA</span>
+                    } @else {
+                      <span class="negative">-{{ transaction.montant | number:'1.2-2' }} FCFA</span>
+                    }
+                  </span>
+                </div>
+                <div class="transaction-details">
+                  <div class="transaction-date">{{ transaction.dateTransaction | date:'dd/MM/yyyy HH:mm:ss' }}</div>
+                  @if (transaction.description) {
+                    <div class="transaction-description">{{ transaction.description }}</div>
+                  }
+                  @if (transaction.compteDestinataire) {
+                    <div class="transaction-destination">
+                      Vers: {{ transaction.compteDestinataire }}
+                    </div>
+                  }
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>

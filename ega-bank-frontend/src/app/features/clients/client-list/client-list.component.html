@@ -1,0 +1,67 @@
+<div class="container">
+  <div class="header">
+    <h1>Liste des Clients</h1>
+    <a routerLink="/clients/new" class="btn btn-primary">
+      <i class="icon">+</i> Nouveau Client
+    </a>
+  </div>
+
+  <div class="search-bar">
+    <input
+      type="text"
+      [(ngModel)]="searchQuery"
+      (input)="searchClients()"
+      placeholder="Rechercher un client..."
+      class="search-input"
+    />
+  </div>
+
+  @if (loading()) {
+    <div class="loading">Chargement...</div>
+  }
+
+  @if (error()) {
+    <div class="error">{{ error() }}</div>
+  }
+
+  @if (!loading() && clients().length === 0) {
+    <div class="empty">Aucun client trouvé</div>
+  }
+
+  @if (!loading() && clients().length > 0) {
+    <div class="table-container">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nom</th>
+            <th>Prénom</th>
+            <th>Date de Naissance</th>
+            <th>Sexe</th>
+            <th>Téléphone</th>
+            <th>Email</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (client of clients(); track client.id) {
+            <tr>
+              <td>{{ client.id }}</td>
+              <td>{{ client.nom }}</td>
+              <td>{{ client.prenom }}</td>
+              <td>{{ client.dateNaissance }}</td>
+              <td>{{ client.sexe }}</td>
+              <td>{{ client.telephone }}</td>
+              <td>{{ client.email }}</td>
+              <td class="actions">
+                <a [routerLink]="['/clients', client.id]" class="btn btn-sm btn-info">Détails</a>
+                <a [routerLink]="['/clients', client.id, 'edit']" class="btn btn-sm btn-warning">Modifier</a>
+                <button (click)="deleteClient(client.id!)" class="btn btn-sm btn-danger">Supprimer</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>
