@@ -50,8 +50,12 @@ export class TransactionsComponent implements OnInit, OnDestroy {
       if (this.accountId) {
         this.loadAccountAndTransactions(this.accountId);
       } else {
-        // Charger toutes les transactions de tous les comptes
-        this.loadAllTransactions();
+        // Admin: toutes les transactions, Client: charger un compte par défaut
+        if (this.isAdmin) {
+          this.loadAllTransactions();
+        } else {
+          this.loadDefaultAccountTransactions();
+        }
       }
     });
 
@@ -138,6 +142,33 @@ export class TransactionsComponent implements OnInit, OnDestroy {
         this.isLoading = false;
         this.cdr.detectChanges();
       },
+    });
+  }
+
+  private loadDefaultAccountTransactions(): void {
+    this.isLoading = true;
+    this.errorMessage = '';
+    this.selectedAccount = null;
+    this.cdr.detectChanges();
+
+    this.accountService.getMine().subscribe({
+      next: (accounts) => {
+        const firstAccount = accounts[0];
+        if (!firstAccount) {
+          this.transactions = [];
+          this.isLoading = false;
+          this.cdr.detectChanges();
+          return;
+        }
+        this.accountId = firstAccount.numeroCompte;
+        this.loadAccountAndTransactions(firstAccount.numeroCompte);
+      },
+      error: (err) => {
+        console.error('Failed to load accounts', err);
+        this.errorMessage = 'Failed to load accounts.';
+        this.isLoading = false;
+        this.cdr.detectChanges();
+      }
     });
   }
 
