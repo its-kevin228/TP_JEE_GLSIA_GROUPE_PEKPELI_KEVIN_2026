@@ -6,12 +6,14 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ega.egabank.security.SecurityService;
 import com.ega.egabank.service.StatementService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -29,9 +31,11 @@ import lombok.RequiredArgsConstructor;
 public class StatementController {
 
     private final StatementService statementService;
+    private final SecurityService securityService;
 
     @Operation(summary = "Télécharger le relevé de compte en PDF")
     @GetMapping("/{numeroCompte}")
+    @PreAuthorize("hasRole('ADMIN') or @securityService.isAccountOwner(#numeroCompte)")
     public ResponseEntity<byte[]> downloadStatement(
             @Parameter(description = "Numéro de compte (IBAN)") @PathVariable String numeroCompte,
             @Parameter(description = "Date de début (format: yyyy-MM-dd)") @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate debut,

@@ -33,4 +33,11 @@ export class TransactionService {
   getAll(): Observable<TransactionResponse[]> {
     return this.api.get<TransactionResponse[]>(`/transactions`);
   }
+
+  /**
+   * Récupère toutes les transactions du client connecté
+   */
+  getMine(): Observable<TransactionResponse[]> {
+    return this.api.get<TransactionResponse[]>(`/transactions/me`);
+  }
 }

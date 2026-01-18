@@ -20,6 +20,8 @@ import com.ega.egabank.dto.response.AccountResponse;
 import com.ega.egabank.dto.response.MessageResponse;
 import com.ega.egabank.dto.response.PageResponse;
 import com.ega.egabank.service.AccountService;
+import com.ega.egabank.security.SecurityService;
+import com.ega.egabank.exception.OperationNotAllowedException;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -39,6 +41,7 @@ import lombok.RequiredArgsConstructor;
 public class AccountController {
 
     private final AccountService accountService;
+    private final SecurityService securityService;
 
     @Operation(summary = "Récupérer tous les comptes avec pagination (Admin)")
     @GetMapping
@@ -51,6 +54,7 @@ public class AccountController {
 
     @Operation(summary = "Récupérer un compte par son numéro IBAN (Authentifié)")
     @GetMapping("/{numeroCompte}")
+    @PreAuthorize("hasRole('ADMIN') or @securityService.isAccountOwner(#numeroCompte)")
     public ResponseEntity<AccountResponse> getAccountByNumber(
             @Parameter(description = "Numéro de compte (IBAN)") @PathVariable String numeroCompte) {
         return ResponseEntity.ok(accountService.getAccountByNumber(numeroCompte));
@@ -58,8 +62,20 @@ public class AccountController {
 
     @Operation(summary = "Récupérer les comptes d'un client (Authentifié)")
     @GetMapping("/client/{clientId}")
+    @PreAuthorize("hasRole('ADMIN') or @securityService.isClientOwner(#clientId)")
     public ResponseEntity<List<AccountResponse>> getAccountsByClient(
             @Parameter(description = "Identifiant du client") @PathVariable Long clientId) {
+        return ResponseEntity.ok(accountService.getAccountsByClient(clientId));
+    }
+
+    @Operation(summary = "Récupérer les comptes du client connecté")
+    @GetMapping("/me")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<List<AccountResponse>> getMyAccounts() {
+        Long clientId = securityService.getCurrentClientId();
+        if (clientId == null) {
+            throw new OperationNotAllowedException("Aucun client associé à l'utilisateur connecté");
+        }
         return ResponseEntity.ok(accountService.getAccountsByClient(clientId));
     }
 

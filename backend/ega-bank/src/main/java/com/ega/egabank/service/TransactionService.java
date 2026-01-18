@@ -26,4 +26,9 @@ public interface TransactionService {
      * Récupère toutes les transactions de tous les comptes
      */
     List<TransactionResponse> getAllTransactions();
+
+    /**
+     * Récupère toutes les transactions du client connecté
+     */
+    List<TransactionResponse> getAllTransactionsForClient(Long clientId);
 }

@@ -202,6 +202,15 @@ public class TransactionServiceImpl implements TransactionService {
         return transactionMapper.toResponseList(transactions);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<TransactionResponse> getAllTransactionsForClient(Long clientId) {
+        log.debug("Récupération des transactions pour le client: {}", clientId);
+        List<Transaction> transactions = transactionRepository
+                .findByCompteProprietaireIdOrderByDateTransactionDesc(clientId);
+        return transactionMapper.toResponseList(transactions);
+    }
+
     private Account findActiveAccount(String numeroCompte) {
         Account account = accountRepository.findByNumeroCompte(numeroCompte)
                 .orElseThrow(() -> new ResourceNotFoundException("Compte", "numéro", numeroCompte));

@@ -20,6 +20,10 @@ export class AccountService {
     return this.api.get<AccountResponse[]>(`/accounts/client/${clientId}`);
   }
 
+  getMine(): Observable<AccountResponse[]> {
+    return this.api.get<AccountResponse[]>(`/accounts/me`);
+  }
+
   create(payload: AccountRequest): Observable<AccountResponse> {
     return this.api.post<AccountResponse>(`/accounts`, payload);
   }

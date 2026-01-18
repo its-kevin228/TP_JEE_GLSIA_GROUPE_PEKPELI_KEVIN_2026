@@ -76,7 +76,9 @@ export class TransactionsComponent implements OnInit, OnDestroy {
     this.selectedAccount = null;
     this.cdr.detectChanges();
 
-    this.txService.getAll().subscribe({
+    const request$ = this.isAdmin ? this.txService.getAll() : this.txService.getMine();
+
+    request$.subscribe({
       next: (transactions) => {
         this.transactions = transactions.sort(
           (a, b) => new Date(b.dateTransaction).getTime() - new Date(a.dateTransaction).getTime()

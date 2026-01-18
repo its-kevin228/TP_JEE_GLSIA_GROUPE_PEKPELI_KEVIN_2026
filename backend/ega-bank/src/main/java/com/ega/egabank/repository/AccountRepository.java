@@ -24,6 +24,8 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 
     boolean existsByNumeroCompte(String numeroCompte);
 
+    boolean existsByNumeroCompteAndProprietaireId(String numeroCompte, Long clientId);
+
     List<Account> findByProprietaireId(Long clientId);
 
     Page<Account> findByProprietaireId(Long clientId, Pageable pageable);

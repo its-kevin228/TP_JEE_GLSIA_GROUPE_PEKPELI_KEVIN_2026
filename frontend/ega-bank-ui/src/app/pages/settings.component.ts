@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { ClientResponse } from '../models/client.model';
+import { ClientService } from '../services/client.service';
 
 @Component({
     standalone: true,
@@ -9,7 +11,7 @@ import { FormsModule } from '@angular/forms';
     template: `
     <div class="p-6 max-w-4xl mx-auto">
       <div class="mb-8">
-        <h1 class="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-blue-600 mb-2">Settings</h1>
+        <h1 class="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-blue-600 mb-2">Settings</h1>
         <p class="text-gray-500">Manage your account preferences and security settings.</p>
       </div>
 
@@ -49,6 +51,7 @@ import { FormsModule } from '@angular/forms';
           
           <!-- Profile Tab -->
           <div *ngIf="activeTab === 'profile'" class="card p-6 animate-fade-in">
+            <div *ngIf="isLoading" class="text-sm text-gray-500 mb-4">Chargement du profil...</div>
             <h2 class="text-xl font-bold mb-6 flex items-center gap-2">
               <i class="ri-user-smile-line text-primary"></i> Personal Information
             </h2>
@@ -63,8 +66,8 @@ import { FormsModule } from '@angular/forms';
                 </div>
               </div>
               <div>
-                <h3 class="font-bold text-lg">Admin User</h3>
-                <p class="text-gray-500 text-sm">admin@egabank.com</p>
+                <h3 class="font-bold text-lg">{{ profile?.nomComplet || 'Profil Client' }}</h3>
+                <p class="text-gray-500 text-sm">{{ profile?.courriel || '---' }}</p>
                 <button class="text-primary text-sm font-medium hover:underline mt-1">Change Avatar</button>
               </div>
             </div>
@@ -73,21 +76,21 @@ import { FormsModule } from '@angular/forms';
               <div class="grid grid-cols-2 gap-4">
                 <div>
                   <label class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
-                  <input type="text" class="input w-full" value="Admin" />
+                  <input type="text" class="input w-full" [value]="profile?.prenom || ''" readonly />
                 </div>
                 <div>
                   <label class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
-                  <input type="text" class="input w-full" value="User" />
+                  <input type="text" class="input w-full" [value]="profile?.nom || ''" readonly />
                 </div>
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
-                <input type="email" class="input w-full" value="admin@egabank.com" readonly />
+                <input type="email" class="input w-full" [value]="profile?.courriel || ''" readonly />
                 <p class="text-xs text-gray-500 mt-1">Contact support to change email.</p>
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
-                <input type="tel" class="input w-full" placeholder="+1 (555) 000-0000" />
+                <input type="tel" class="input w-full" [value]="profile?.telephone || ''" />
               </div>
 
               <div class="pt-4 flex justify-end">
@@ -201,13 +204,34 @@ import { FormsModule } from '@angular/forms';
       @apply px-6 py-2 rounded-lg font-medium transition-all shadow-sm active:scale-95;
     }
     .btn-primary {
-      @apply bg-gradient-to-r from-primary to-blue-600 text-white hover:shadow-md hover:opacity-90;
+      @apply bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:shadow-md hover:opacity-90;
     }
   `]
 })
-export class SettingsComponent {
+export class SettingsComponent implements OnInit {
     activeTab: 'profile' | 'security' | 'notifications' = 'profile';
     isSaving = false;
+    isLoading = false;
+    profile: ClientResponse | null = null;
+
+    constructor(private clientService: ClientService) {}
+
+    ngOnInit(): void {
+        this.loadProfile();
+    }
+
+    loadProfile() {
+        this.isLoading = true;
+        this.clientService.getMe().subscribe({
+            next: (profile) => {
+                this.profile = profile;
+                this.isLoading = false;
+            },
+            error: () => {
+                this.isLoading = false;
+            }
+        });
+    }
 
     saveProfile() {
         this.isSaving = true;

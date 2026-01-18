@@ -35,6 +35,8 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
             "ORDER BY t.dateTransaction DESC")
     Page<Transaction> findByNumeroCompte(@Param("numero") String numeroCompte, Pageable pageable);
 
+    List<Transaction> findByCompteProprietaireIdOrderByDateTransactionDesc(Long clientId);
+
     List<Transaction> findByType(TypeTransaction type);
 
     @Query("SELECT SUM(t.montant) FROM Transaction t WHERE t.compte.id = :compteId AND t.type = :type")

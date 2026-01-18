@@ -24,6 +24,10 @@ export class ClientService {
     return this.api.get<ClientResponse>(`/clients/${id}/details`);
   }
 
+  getMe(): Observable<ClientResponse> {
+    return this.api.get<ClientResponse>(`/clients/me`);
+  }
+
   create(payload: ClientRequest): Observable<ClientResponse> {
     return this.api.post<ClientResponse>(`/clients`, payload);
   }

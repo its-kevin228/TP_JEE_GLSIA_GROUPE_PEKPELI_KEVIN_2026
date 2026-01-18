@@ -2,6 +2,7 @@ package com.ega.egabank.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ega.egabank.dto.request.LoginRequest;
+import com.ega.egabank.dto.request.AdminCreateUserRequest;
 import com.ega.egabank.dto.request.RegisterRequest;
 import com.ega.egabank.dto.response.AuthResponse;
 import com.ega.egabank.service.AuthService;
@@ -48,5 +50,13 @@ public class AuthController {
     public ResponseEntity<AuthResponse> refreshToken(@RequestParam String refreshToken) {
         AuthResponse response = authService.refreshToken(refreshToken);
         return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "Créer un client + utilisateur (Admin)")
+    @PostMapping("/admin/create-client-user")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<AuthResponse> createClientUser(@Valid @RequestBody AdminCreateUserRequest request) {
+        AuthResponse response = authService.createClientUser(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }

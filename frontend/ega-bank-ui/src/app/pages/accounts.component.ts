@@ -6,6 +6,7 @@ import { AccountResponse } from '../models/account.model';
 import { AccountService } from '../services/account.service';
 import { ClientService } from '../services/client.service';
 import { AppStore } from '../stores/app.store';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   standalone: true,
@@ -28,7 +29,8 @@ export class AccountsComponent implements OnInit, OnDestroy {
     private accountService: AccountService,
     private clientService: ClientService,
     private store: AppStore,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private authService: AuthService
   ) { }
 
   ngOnInit(): void {
@@ -74,11 +76,26 @@ export class AccountsComponent implements OnInit, OnDestroy {
           this.cdr.detectChanges();
         },
       });
-    } else {
+    } else if (this.authService.isAdmin()) {
       // Load all accounts
       this.accountService.getAll(0, 100).subscribe({
         next: (response) => {
           this.accounts = response.content || [];
+          this.isLoading = false;
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          console.error('Failed to load accounts', err);
+          this.errorMessage = 'Failed to load accounts.';
+          this.isLoading = false;
+          this.cdr.detectChanges();
+        },
+      });
+    } else {
+      // Client: load only own accounts
+      this.accountService.getMine().subscribe({
+        next: (accounts) => {
+          this.accounts = accounts;
           this.isLoading = false;
           this.cdr.detectChanges();
         },
