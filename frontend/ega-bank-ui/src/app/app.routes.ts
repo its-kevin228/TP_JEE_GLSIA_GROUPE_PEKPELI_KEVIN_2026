@@ -11,7 +11,6 @@ import { ClientCreateComponent } from './pages/client-create.component';
 import { ClientsComponent } from './pages/clients.component';
 import { DashboardComponent } from './pages/dashboard.component';
 import { LoginComponent } from './pages/login.component';
-import { RegisterComponent } from './pages/register.component';
 import { PendingUsersComponent } from './pages/pending-users.component';
 import { SettingsComponent } from './pages/settings.component';
 import { TransactionFormComponent } from './pages/transaction-form.component';
@@ -22,7 +21,6 @@ export const routes: Routes = [
 	// Routes publiques
 	{ path: '', component: LandingComponent },
 	{ path: 'login', component: LoginComponent },
-	{ path: 'register', component: RegisterComponent },
 
 	// Routes ADMIN uniquement (gestion des clients et comptes pour tous)
 	{

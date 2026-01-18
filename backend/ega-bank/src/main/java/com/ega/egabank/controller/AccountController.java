@@ -102,4 +102,12 @@ public class AccountController {
         accountService.deactivateAccount(id);
         return ResponseEntity.ok(MessageResponse.success("Compte désactivé avec succès"));
     }
+
+    @Operation(summary = "Activer un compte (Admin)")
+    @PutMapping("/{id}/activate")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<MessageResponse> activateAccount(@PathVariable Long id) {
+        accountService.activateAccount(id);
+        return ResponseEntity.ok(MessageResponse.success("Compte activé avec succès"));
+    }
 }

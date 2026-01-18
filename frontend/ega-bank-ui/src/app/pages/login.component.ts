@@ -68,7 +68,7 @@ import { AuthService } from '../services/auth.service';
         </form>
 
         <div class="footer">
-          Don't have an account? <a routerLink="/register" class="link">Sign up</a>
+          Contact your administrator if you need an account.
         </div>
       </div>
     </div>

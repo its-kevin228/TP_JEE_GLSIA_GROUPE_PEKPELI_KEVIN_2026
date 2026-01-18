@@ -40,7 +40,7 @@ export class AccountService {
     return this.api.put(`/accounts/${id}/activate`, {});
   }
 
-  updateStatus(numeroCompte: string, actif: boolean): Observable<any> {
-    return actif ? this.activate(Number(numeroCompte)) : this.deactivate(Number(numeroCompte));
+  updateStatus(id: number, actif: boolean): Observable<any> {
+    return actif ? this.activate(id) : this.deactivate(id);
   }
 }

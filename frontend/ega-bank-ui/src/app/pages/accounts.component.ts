@@ -7,6 +7,7 @@ import { AccountService } from '../services/account.service';
 import { ClientService } from '../services/client.service';
 import { AppStore } from '../stores/app.store';
 import { AuthService } from '../services/auth.service';
+import { RouteHelperService } from '../services/route-helper.service';
 
 @Component({
   standalone: true,
@@ -31,7 +32,8 @@ export class AccountsComponent implements OnInit, OnDestroy {
     private clientService: ClientService,
     private store: AppStore,
     private cdr: ChangeDetectorRef,
-    private authService: AuthService
+    private authService: AuthService,
+    private routeHelper: RouteHelperService
   ) { }
 
   ngOnInit(): void {
@@ -128,7 +130,7 @@ export class AccountsComponent implements OnInit, OnDestroy {
   }
 
   viewTransactions(numeroCompte: string) {
-    this.router.navigate(['/transactions'], { queryParams: { accountId: numeroCompte } });
+    this.router.navigate([this.routeHelper.getTransactionsRoute()], { queryParams: { accountId: numeroCompte } });
   }
 
   editAccount(account: AccountResponse) {
@@ -138,7 +140,7 @@ export class AccountsComponent implements OnInit, OnDestroy {
   toggleStatus(account: AccountResponse) {
     const newStatus = !account.actif;
     if (confirm(`Are you sure you want to ${newStatus ? 'activate' : 'deactivate'} this account?`)) {
-      this.accountService.updateStatus(account.numeroCompte, newStatus).subscribe({
+      this.accountService.updateStatus(account.id, newStatus).subscribe({
         next: () => {
           account.actif = newStatus;
           this.cdr.detectChanges();

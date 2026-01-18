@@ -2,12 +2,15 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { AccountResponse } from '../models/account.model';
 import { TransactionResponse } from '../models/transaction.model';
 import { AccountService } from '../services/account.service';
 import { TransactionService } from '../services/transaction.service';
 import { AppStore } from '../stores/app.store';
+import { AuthService } from '../services/auth.service';
+import { RouteHelperService } from '../services/route-helper.service';
 
 @Component({
   selector: 'app-transaction-form',
@@ -187,10 +190,10 @@ import { AppStore } from '../stores/app.store';
 
           <!-- Actions -->
           <div class="flex gap-4">
-            <a routerLink="/transactions" class="btn btn-secondary flex-1" *ngIf="returnAccountId">
+            <a [routerLink]="transactionsRoute" class="btn btn-secondary flex-1" *ngIf="returnAccountId">
               <i class="ri-arrow-left-line"></i> Cancel
             </a>
-            <a routerLink="/accounts" class="btn btn-secondary flex-1" *ngIf="!returnAccountId">
+            <a [routerLink]="accountsRoute" class="btn btn-secondary flex-1" *ngIf="!returnAccountId">
               <i class="ri-arrow-left-line"></i> Cancel
             </a>
             <button type="submit" 
@@ -259,7 +262,9 @@ export class TransactionFormComponent implements OnInit, OnDestroy {
     private router: Router,
     private route: ActivatedRoute,
     private store: AppStore,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private authService: AuthService,
+    private routeHelper: RouteHelperService
   ) {
     this.form = this.fb.group({
       type: ['DEPOT', Validators.required],
@@ -303,9 +308,13 @@ export class TransactionFormComponent implements OnInit, OnDestroy {
     this.errorMessage = '';
     this.cdr.detectChanges();
     
-    this.accountService.getAll(0, 200).subscribe({
-      next: (response) => {
-        this.accounts = (response.content || []).filter(a => a.actif);
+    const request$: Observable<AccountResponse[]> = this.authService.isAdmin()
+      ? this.accountService.getAll(0, 200).pipe(map(response => response.content || []))
+      : this.accountService.getMine();
+
+    request$.subscribe({
+      next: (accounts) => {
+        this.accounts = accounts.filter((a) => a.actif);
         this.isLoadingAccounts = false;
 
         // If pre-selected account
@@ -314,7 +323,7 @@ export class TransactionFormComponent implements OnInit, OnDestroy {
         }
         this.cdr.detectChanges();
       },
-      error: (err) => {
+      error: (err: any) => {
         console.error('Failed to load accounts', err);
         this.errorMessage = 'Failed to load accounts. Please try again.';
         this.isLoadingAccounts = false;
@@ -435,9 +444,9 @@ export class TransactionFormComponent implements OnInit, OnDestroy {
     // Navigate after showing success
     setTimeout(() => {
       if (this.returnAccountId) {
-        this.router.navigate(['/transactions'], { queryParams: { accountId: this.returnAccountId } });
+        this.router.navigate([this.transactionsRoute], { queryParams: { accountId: this.returnAccountId } });
       } else {
-        this.router.navigateByUrl('/accounts');
+        this.router.navigateByUrl(this.accountsRoute);
       }
     }, 1500);
   }
@@ -446,5 +455,13 @@ export class TransactionFormComponent implements OnInit, OnDestroy {
     console.error('Transaction failed', err);
     this.isSubmitting = false;
     this.errorMessage = err.error?.message || 'Transaction failed. Please try again.';
+  }
+
+  get accountsRoute(): string {
+    return this.routeHelper.getAccountsRoute();
+  }
+
+  get transactionsRoute(): string {
+    return this.routeHelper.getTransactionsRoute();
   }
 }

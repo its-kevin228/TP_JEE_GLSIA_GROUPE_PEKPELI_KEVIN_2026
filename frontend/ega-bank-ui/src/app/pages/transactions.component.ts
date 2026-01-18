@@ -1,4 +1,5 @@
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
@@ -8,11 +9,13 @@ import { AccountService } from '../services/account.service';
 import { TransactionService } from '../services/transaction.service';
 import { AppStore } from '../stores/app.store';
 import { AuthService } from '../services/auth.service';
+import { RouteHelperService } from '../services/route-helper.service';
+import { StatementService } from '../services/statement.service';
 
 @Component({
   standalone: true,
   selector: 'app-transactions',
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, FormsModule],
   templateUrl: './transactions.component.html',
 })
 export class TransactionsComponent implements OnInit, OnDestroy {
@@ -22,6 +25,8 @@ export class TransactionsComponent implements OnInit, OnDestroy {
   isLoading = true;
   errorMessage = '';
   isAdmin = false;
+  statementStart = '';
+  statementEnd = '';
 
   private destroy$ = new Subject<void>();
 
@@ -31,11 +36,14 @@ export class TransactionsComponent implements OnInit, OnDestroy {
     private accountService: AccountService,
     private store: AppStore,
     private cdr: ChangeDetectorRef,
-    private authService: AuthService
+    private authService: AuthService,
+    private routeHelper: RouteHelperService,
+    private statementService: StatementService
   ) { }
 
   ngOnInit(): void {
     this.isAdmin = this.authService.isAdmin();
+    this.initStatementDates();
 
     this.route.queryParamMap.subscribe((map) => {
       this.accountId = map.get('accountId');
@@ -99,6 +107,8 @@ export class TransactionsComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     this.errorMessage = '';
     this.cdr.detectChanges();
+
+    this.initStatementDates();
 
     // Load account details
     this.accountService.getByNumber(numeroCompte).subscribe({
@@ -171,5 +181,46 @@ export class TransactionsComponent implements OnInit, OnDestroy {
       COURANT: 'Checking',
     };
     return types[typeCompte] || typeCompte;
+  }
+
+  downloadStatement(): void {
+    if (!this.accountId || !this.statementStart || !this.statementEnd) {
+      return;
+    }
+
+    this.statementService.downloadStatement(this.accountId, this.statementStart, this.statementEnd).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `releve_${this.accountId}_${this.statementStart}_${this.statementEnd}.pdf`;
+        link.click();
+        window.URL.revokeObjectURL(url);
+      },
+      error: (err) => {
+        console.error('Failed to download statement', err);
+        this.errorMessage = 'Failed to download statement.';
+      }
+    });
+  }
+
+  private initStatementDates(): void {
+    const today = new Date();
+    const start = new Date();
+    start.setDate(today.getDate() - 30);
+    this.statementEnd = today.toISOString().slice(0, 10);
+    this.statementStart = start.toISOString().slice(0, 10);
+  }
+
+  get transactionsRoute(): string {
+    return this.routeHelper.getTransactionsRoute();
+  }
+
+  get newTransactionRoute(): string {
+    return this.routeHelper.getNewTransactionRoute();
+  }
+
+  get accountsRoute(): string {
+    return this.routeHelper.getAccountsRoute();
   }
 }

@@ -135,6 +135,19 @@ public class AccountServiceImpl implements AccountService {
         log.info("Compte désactivé avec succès - id: {}", id);
     }
 
+    @Override
+    public void activateAccount(Long id) {
+        log.info("Activation du compte - id: {}", id);
+
+        Account account = accountRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Compte", "id", id));
+
+        account.setActif(true);
+        accountRepository.save(account);
+
+        log.info("Compte activé avec succès - id: {}", id);
+    }
+
     private Account findAccountByNumber(String numeroCompte) {
         return accountRepository.findByNumeroCompteWithClient(numeroCompte)
                 .orElseThrow(() -> new ResourceNotFoundException("Compte", "numéro", numeroCompte));

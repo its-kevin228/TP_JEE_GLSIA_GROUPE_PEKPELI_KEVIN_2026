@@ -22,4 +22,6 @@ public interface AccountService {
     void deleteAccount(Long id);
 
     void deactivateAccount(Long id);
+
+    void activateAccount(Long id);
 }

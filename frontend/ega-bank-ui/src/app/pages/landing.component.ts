@@ -20,12 +20,9 @@ import { CommonModule } from '@angular/common';
             <span class="hidden lg:inline-block px-3 py-1 bg-slate-100 text-slate-600 text-xs font-medium rounded">v1.0.0</span>
 
             <div class="flex items-center gap-3">
-              <a
-                routerLink="/register"
-                class="px-4 py-2 text-slate-700 text-sm font-medium hover:text-slate-900 transition-colors"
-              >
-                S'inscrire
-              </a>
+              <span class="px-4 py-2 text-slate-600 text-sm font-medium">
+                Contactez un administrateur
+              </span>
               <button
                 (click)="goToLogin()"
                 class="px-6 py-2.5 bg-slate-900 text-white text-sm font-medium rounded-lg hover:bg-slate-800 transition-all"
@@ -100,15 +97,14 @@ import { CommonModule } from '@angular/common';
           </p>
 
           <div class="flex flex-wrap gap-4 justify-center">
-            <a
-              routerLink="/register"
-              class="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-medium rounded-lg hover:shadow-xl hover:scale-105 transition-all"
+            <div
+              class="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-medium rounded-lg"
             >
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
               </svg>
-              Créer un compte
-            </a>
+              Accès sur invitation admin
+            </div>
             <button
               (click)="goToLogin()"
               class="inline-flex items-center gap-2 px-8 py-4 bg-white border-2 border-slate-300 text-slate-700 font-medium rounded-lg hover:bg-slate-50 hover:border-slate-400 transition-all"

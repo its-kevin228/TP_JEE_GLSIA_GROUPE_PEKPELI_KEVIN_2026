@@ -18,8 +18,8 @@ export class App {
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
         const url = event.urlAfterRedirects.split('?')[0];
-        // Afficher le layout pour toutes les routes SAUF login, register et landing
-        const publicRoutes = ['/login', '/register', '/'];
+        // Afficher le layout pour toutes les routes SAUF login et landing
+        const publicRoutes = ['/login', '/'];
         this.showLayout.set(!publicRoutes.includes(url));
       }
     });

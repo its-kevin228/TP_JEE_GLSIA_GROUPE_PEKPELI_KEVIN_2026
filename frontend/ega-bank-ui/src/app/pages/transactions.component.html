@@ -7,10 +7,10 @@
             </p>
         </div>
         <div class="flex gap-2" *ngIf="!isAdmin">
-            <a *ngIf="accountId" routerLink="/transactions" class="btn btn-secondary">
+            <a *ngIf="accountId" [routerLink]="transactionsRoute" class="btn btn-secondary">
                 <i class="ri-list-check"></i> View All
             </a>
-            <a [routerLink]="['/transactions/new']" [queryParams]="accountId ? {accountId: accountId} : {}"
+            <a [routerLink]="newTransactionRoute" [queryParams]="accountId ? {accountId: accountId} : {}"
                 class="btn btn-primary">
                 <i class="ri-add-line" style="margin-right: 0.5rem;"></i> New Transaction
             </a>
@@ -45,7 +45,7 @@
     <!-- Error State -->
     <div *ngIf="errorMessage && !isLoading" class="alert alert-danger mb-4">
         <i class="ri-error-warning-line"></i> {{ errorMessage }}
-        <a *ngIf="!accountId" routerLink="/accounts" class="btn btn-sm btn-secondary ml-2">
+        <a *ngIf="!accountId" [routerLink]="accountsRoute" class="btn btn-sm btn-secondary ml-2">
             <i class="ri-bank-card-line"></i> Select Account
         </a>
     </div>
@@ -79,6 +79,24 @@
                 <i class="ri-exchange-dollar-line"></i> Transactions
             </div>
             <div class="font-bold text-xl">{{ transactions.length }}</div>
+        </div>
+    </div>
+
+    <!-- Statement download -->
+    <div *ngIf="selectedAccount && !isLoading" class="card p-4 mb-6">
+        <div class="flex flex-wrap items-center gap-3 justify-between">
+            <div>
+                <div class="font-semibold">Relevé PDF</div>
+                <div class="text-sm text-gray-500">Sélectionnez une période pour télécharger le relevé.</div>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+                <input type="date" class="input" [(ngModel)]="statementStart" />
+                <span class="text-gray-400">→</span>
+                <input type="date" class="input" [(ngModel)]="statementEnd" />
+                <button class="btn btn-primary" (click)="downloadStatement()" [disabled]="!statementStart || !statementEnd">
+                    <i class="ri-download-line"></i> Télécharger
+                </button>
+            </div>
         </div>
     </div>
 
@@ -167,7 +185,7 @@
         </div>
         <h3 class="font-bold text-lg mb-2 text-gray-700">{{ isAdmin ? 'Aucune Transaction' : 'No Transactions Yet' }}</h3>
         <p class="text-gray-500 mb-4">{{ isAdmin ? 'Aucune transaction trouvée pour ce compte.' : 'This account has no transaction history.' }}</p>
-        <a *ngIf="!isAdmin" [routerLink]="['/transactions/new']" [queryParams]="{accountId: accountId}" class="btn btn-primary">
+        <a *ngIf="!isAdmin" [routerLink]="newTransactionRoute" [queryParams]="{accountId: accountId}" class="btn btn-primary">
             <i class="ri-add-line" style="margin-right: 0.5rem;"></i> Make First Transaction
         </a>
     </div>
@@ -179,7 +197,7 @@
         </div>
         <h3 class="font-bold text-lg mb-2 text-gray-700">{{ isAdmin ? 'Aucune Transaction' : 'No Transactions Yet' }}</h3>
         <p class="text-gray-500 mb-4">{{ isAdmin ? 'Aucune transaction enregistrée dans le système.' : 'No transactions have been made in the system yet.' }}</p>
-        <a *ngIf="!isAdmin" routerLink="/transactions/new" class="btn btn-primary">
+        <a *ngIf="!isAdmin" [routerLink]="newTransactionRoute" class="btn btn-primary">
             <i class="ri-add-line" style="margin-right: 0.5rem;"></i> Make First Transaction
         </a>
     </div>
