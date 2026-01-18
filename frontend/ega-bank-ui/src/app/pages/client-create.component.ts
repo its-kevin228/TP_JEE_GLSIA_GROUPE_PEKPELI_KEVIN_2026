@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ClientService } from '../services/client.service';
 import { AuthService } from '../services/auth.service';
@@ -107,10 +107,10 @@ export class ClientCreateComponent implements OnInit {
     this.form = this.fb.group({
       nom: ['', Validators.required],
       prenom: ['', Validators.required],
-      dateNaissance: [new Date().toISOString().split('T')[0], Validators.required],
+      dateNaissance: ['', [Validators.required, this.pastDateValidator]],
       sexe: ['MASCULIN', Validators.required],
-      telephone: [''],
-      courriel: ['', Validators.email],
+      telephone: ['', [Validators.pattern(/^\+?[0-9]{8,15}$/)]],
+      courriel: ['', [Validators.required, Validators.email]],
       username: ['', Validators.required],
       password: ['', [Validators.required, Validators.minLength(6)]],
     });
@@ -175,8 +175,8 @@ export class ClientCreateComponent implements OnInit {
         prenom: payload.prenom,
         dateNaissance: payload.dateNaissance,
         sexe: payload.sexe,
-        telephone: payload.telephone,
-        courriel: payload.courriel
+        telephone: payload.telephone?.trim() ? payload.telephone.trim() : null,
+        courriel: payload.courriel?.trim()
       };
 
       this.authService.createClientUser({
@@ -192,5 +192,15 @@ export class ClientCreateComponent implements OnInit {
         }
       });
     }
+  }
+
+  private pastDateValidator(control: AbstractControl) {
+    if (!control.value) {
+      return null;
+    }
+    const inputDate = new Date(control.value);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return inputDate < today ? null : { pastDate: true };
   }
 }

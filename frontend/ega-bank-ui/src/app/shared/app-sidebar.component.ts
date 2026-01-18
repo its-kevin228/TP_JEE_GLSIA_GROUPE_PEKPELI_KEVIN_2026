@@ -37,7 +37,6 @@ export class AppSidebar implements OnInit {
       // Navigation pour ADMIN
       this.navItems = [
         { label: 'Dashboard', href: '/admin/dashboard', icon: 'ri-dashboard-line' },
-        { label: 'Pending Activations', href: '/admin/pending-users', icon: 'ri-user-add-line' },
         { label: 'Clients', href: '/admin/clients', icon: 'ri-user-line' },
         { label: 'Accounts', href: '/admin/accounts', icon: 'ri-bank-card-line' },
         { label: 'Historique Transaction', href: '/admin/transactions', icon: 'ri-exchange-dollar-line' },

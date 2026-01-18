@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { RouteHelperService } from '../services/route-helper.service';
 import { AccountService } from '../services/account.service';
 import { AuthService } from '../services/auth.service';
 import { ClientService } from '../services/client.service';
@@ -24,6 +25,7 @@ import { ClientService } from '../services/client.service';
                 placeholder="Search clients or accounts..."
                 style="width:100%;padding:10px 16px 10px 40px;border-radius:24px;border:1px solid #e5e7eb;background:#f9fafb;outline:none;transition:all 0.2s;"
                 (focus)="showSearch = true"
+                (blur)="closeAll()"
             />
             <i class="ri-search-line" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#9ca3af;font-size:1.1rem;"></i>
         </div>
@@ -82,8 +84,6 @@ import { ClientService } from '../services/client.service';
       </div>
     </header>
 
-    <!-- Click overlay to close dropdowns -->
-    <div *ngIf="showSearch" (click)="closeAll()" style="position:fixed;top:0;left:0;right:0;bottom:0;z-index:30;"></div>
   `,
   styles: [`
     .search-results {
@@ -260,7 +260,8 @@ export class DashboardHeader {
     private auth: AuthService,
     private router: Router,
     private clientService: ClientService,
-    private accountService: AccountService
+    private accountService: AccountService,
+    private routeHelper: RouteHelperService
   ) {
     this.loadUserInfo();
   }
@@ -309,12 +310,12 @@ export class DashboardHeader {
   }
 
   goToClient(id: number) {
-    this.router.navigate(['/clients'], { queryParams: { id } });
+    this.router.navigate([this.routeHelper.getClientsRoute()], { queryParams: { id } });
     this.closeAll();
   }
 
   goToAccount(num: string) {
-    this.router.navigate(['/transactions'], { queryParams: { accountId: num } });
+    this.router.navigate([this.routeHelper.getTransactionsRoute()], { queryParams: { accountId: num } });
     this.closeAll();
   }
 
@@ -329,7 +330,7 @@ export class DashboardHeader {
   }
 
   goSettings() {
-    this.router.navigate(['/settings']);
+    this.router.navigate([this.routeHelper.getSettingsRoute()]);
     this.closeAll();
   }
 
