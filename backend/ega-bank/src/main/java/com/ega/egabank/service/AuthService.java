@@ -1,6 +1,7 @@
 package com.ega.egabank.service;
 
 import com.ega.egabank.dto.request.LoginRequest;
+import com.ega.egabank.dto.request.RegisterRequest;
 import com.ega.egabank.dto.request.AdminCreateUserRequest;
 import com.ega.egabank.dto.response.AuthResponse;
 
@@ -10,6 +11,8 @@ import com.ega.egabank.dto.response.AuthResponse;
 public interface AuthService {
 
     AuthResponse login(LoginRequest request);
+
+    AuthResponse register(RegisterRequest request);
 
     AuthResponse refreshToken(String refreshToken);
 

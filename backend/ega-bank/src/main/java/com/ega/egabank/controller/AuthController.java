@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ega.egabank.dto.request.LoginRequest;
+import com.ega.egabank.dto.request.RegisterRequest;
 import com.ega.egabank.dto.request.AdminCreateUserRequest;
 import com.ega.egabank.dto.request.ChangePasswordRequest;
 import com.ega.egabank.dto.response.AuthResponse;
@@ -37,6 +38,13 @@ public class AuthController {
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
         AuthResponse response = authService.login(request);
         return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "Inscription d'un nouvel utilisateur")
+    @PostMapping("/register")
+    public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterRequest request) {
+        AuthResponse response = authService.register(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @Operation(summary = "Rafraîchir le token d'accès")

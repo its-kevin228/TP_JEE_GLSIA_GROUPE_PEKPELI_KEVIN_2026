@@ -17,6 +17,8 @@ export interface ClientResponse {
   createdAt?: string;
   nombreComptes?: number;
   comptes?: AccountResponse[];
+  enabled?: boolean; // Statut d'activation du compte utilisateur
+  userId?: number; // ID de l'utilisateur associé
 }
 
 export interface ClientRequest {

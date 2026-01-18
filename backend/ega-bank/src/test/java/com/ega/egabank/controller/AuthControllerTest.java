@@ -70,7 +70,8 @@ class AuthControllerTest {
                 3600L,
                 "testuser",
                 "testuser@email.com",
-                "ROLE_USER");
+                "ROLE_USER",
+                false); // mustChangePassword
     }
 
     @Nested
@@ -80,17 +81,21 @@ class AuthControllerTest {
         @Test
         @DisplayName("Devrait inscrire un nouvel utilisateur avec succès")
         void shouldRegisterSuccessfully() throws Exception {
-            // Arrange
-            when(authService.register(any(RegisterRequest.class))).thenReturn(authResponse);
+            // Arrange - Pour register, le compte est en attente (accountPending = true)
+            AuthResponse pendingResponse = AuthResponse.pending(
+                    "newuser",
+                    "newuser@email.com",
+                    "ROLE_USER");
+            when(authService.register(any(RegisterRequest.class))).thenReturn(pendingResponse);
 
             // Act & Assert
             mockMvc.perform(post("/api/auth/register")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(registerRequest)))
                     .andExpect(status().isCreated())
-                    .andExpect(jsonPath("$.accessToken").value("access-token-jwt"))
-                    .andExpect(jsonPath("$.username").value("testuser"))
-                    .andExpect(jsonPath("$.role").value("ROLE_USER"));
+                    .andExpect(jsonPath("$.username").value("newuser"))
+                    .andExpect(jsonPath("$.role").value("ROLE_USER"))
+                    .andExpect(jsonPath("$.accountPending").value(true));
 
             verify(authService).register(any(RegisterRequest.class));
         }

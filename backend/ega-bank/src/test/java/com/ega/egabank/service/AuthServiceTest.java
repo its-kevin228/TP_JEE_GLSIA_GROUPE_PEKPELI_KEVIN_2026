@@ -23,11 +23,15 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import com.ega.egabank.dto.request.LoginRequest;
 import com.ega.egabank.dto.request.RegisterRequest;
 import com.ega.egabank.dto.response.AuthResponse;
+import com.ega.egabank.entity.Client;
 import com.ega.egabank.entity.User;
 import com.ega.egabank.enums.Role;
 import com.ega.egabank.exception.DuplicateResourceException;
+import com.ega.egabank.mapper.ClientMapper;
+import com.ega.egabank.repository.ClientRepository;
 import com.ega.egabank.repository.UserRepository;
 import com.ega.egabank.security.JwtTokenProvider;
+import com.ega.egabank.security.SecurityService;
 import com.ega.egabank.service.impl.AuthServiceImpl;
 
 /**
@@ -48,6 +52,15 @@ class AuthServiceTest {
 
     @Mock
     private AuthenticationManager authenticationManager;
+
+    @Mock
+    private ClientRepository clientRepository;
+
+    @Mock
+    private ClientMapper clientMapper;
+
+    @Mock
+    private SecurityService securityService;
 
     @InjectMocks
     private AuthServiceImpl authService;
@@ -87,23 +100,47 @@ class AuthServiceTest {
         @DisplayName("Devrait inscrire un nouvel utilisateur avec succès")
         void shouldRegisterNewUserSuccessfully() {
             // Arrange
+            Client client = Client.builder()
+                    .id(1L)
+                    .courriel("testuser@email.com")
+                    .nom("À compléter")
+                    .prenom("À compléter")
+                    .build();
+            
+            User pendingUser = User.builder()
+                    .id(1L)
+                    .username("testuser")
+                    .email("testuser@email.com")
+                    .password("encoded_password")
+                    .role(Role.ROLE_USER)
+                    .enabled(false) // Compte inactif
+                    .client(client)
+                    .build();
+
             when(userRepository.existsByUsername("testuser")).thenReturn(false);
             when(userRepository.existsByEmail("testuser@email.com")).thenReturn(false);
+            // ClientMapper.toEntity() sera appelé avec null car register crée un Client minimal
+            // On mock directement le retour du save
+            when(clientRepository.save(any(Client.class))).thenAnswer(invocation -> {
+                Client savedClient = invocation.getArgument(0);
+                savedClient.setId(1L);
+                return savedClient;
+            });
             when(passwordEncoder.encode("password123")).thenReturn("encoded_password");
-            when(userRepository.save(any(User.class))).thenReturn(user);
-            when(tokenProvider.generateAccessToken(anyString())).thenReturn("access-token");
-            when(tokenProvider.generateRefreshToken(anyString())).thenReturn("refresh-token");
-            when(tokenProvider.getExpirationTime()).thenReturn(3600L);
+            when(userRepository.save(any(User.class))).thenReturn(pendingUser);
 
             // Act
             AuthResponse response = authService.register(registerRequest);
 
             // Assert
             assertThat(response).isNotNull();
-            assertThat(response.getAccessToken()).isEqualTo("access-token");
-            assertThat(response.getRefreshToken()).isEqualTo("refresh-token");
             assertThat(response.getUsername()).isEqualTo("testuser");
+            assertThat(response.getEmail()).isEqualTo("testuser@email.com");
             assertThat(response.getRole()).isEqualTo("ROLE_USER");
+            assertThat(response.getAccountPending()).isTrue(); // Compte en attente
+            assertThat(response.getAccessToken()).isNull(); // Pas de token pour compte inactif
+            assertThat(response.getRefreshToken()).isNull(); // Pas de refresh token
+            verify(clientRepository).save(any(Client.class));
             verify(userRepository).save(any(User.class));
         }
 
@@ -136,13 +173,32 @@ class AuthServiceTest {
         @DisplayName("Devrait encoder le mot de passe")
         void shouldEncodePassword() {
             // Arrange
+            Client client = Client.builder()
+                    .id(1L)
+                    .courriel("testuser@email.com")
+                    .nom("À compléter")
+                    .prenom("À compléter")
+                    .build();
+            
+            User pendingUser = User.builder()
+                    .id(1L)
+                    .username("testuser")
+                    .email("testuser@email.com")
+                    .password("encoded_password")
+                    .role(Role.ROLE_USER)
+                    .enabled(false)
+                    .client(client)
+                    .build();
+
             when(userRepository.existsByUsername(anyString())).thenReturn(false);
             when(userRepository.existsByEmail(anyString())).thenReturn(false);
+            when(clientRepository.save(any(Client.class))).thenAnswer(invocation -> {
+                Client savedClient = invocation.getArgument(0);
+                savedClient.setId(1L);
+                return savedClient;
+            });
             when(passwordEncoder.encode("password123")).thenReturn("encoded_password");
-            when(userRepository.save(any(User.class))).thenReturn(user);
-            when(tokenProvider.generateAccessToken(anyString())).thenReturn("token");
-            when(tokenProvider.generateRefreshToken(anyString())).thenReturn("refresh");
-            when(tokenProvider.getExpirationTime()).thenReturn(3600L);
+            when(userRepository.save(any(User.class))).thenReturn(pendingUser);
 
             // Act
             authService.register(registerRequest);

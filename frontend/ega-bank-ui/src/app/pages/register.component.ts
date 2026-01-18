@@ -222,12 +222,25 @@ export class RegisterComponent {
       next: (res: any) => {
         this.isLoading = false;
 
-        // Redirection automatique selon le rôle de l'utilisateur
-        // Les nouveaux inscrits sont des clients par défaut (ROLE_USER)
-        if (this.auth.isAdmin()) {
-          this.router.navigateByUrl('/admin/dashboard');
+        // Vérifier si le compte est en attente de validation
+        if (res.accountPending) {
+          this.successMessage = 
+            '✅ Votre compte a été créé avec succès ! ' +
+            'Il est en attente de validation par un administrateur. ' +
+            'Vous recevrez un email une fois votre compte activé. ' +
+            'Vous pouvez vous connecter une fois votre compte validé.';
+          
+          // Rediriger vers login après 5 secondes
+          setTimeout(() => {
+            this.router.navigateByUrl('/login');
+          }, 5000);
         } else {
-          this.router.navigateByUrl('/client/dashboard');
+          // Compte activé directement (normalement pas le cas pour register)
+          if (this.auth.isAdmin()) {
+            this.router.navigateByUrl('/admin/dashboard');
+          } else {
+            this.router.navigateByUrl('/client/dashboard');
+          }
         }
       },
       error: (err: any) => {

@@ -10,6 +10,7 @@ import com.ega.egabank.dto.request.ClientRequest;
 import com.ega.egabank.dto.response.AccountResponse;
 import com.ega.egabank.dto.response.ClientResponse;
 import com.ega.egabank.entity.Client;
+import com.ega.egabank.repository.UserRepository;
 
 /**
  * Mapper pour les entités Client
@@ -18,9 +19,11 @@ import com.ega.egabank.entity.Client;
 public class ClientMapper {
 
     private final AccountMapper accountMapper;
+    private final UserRepository userRepository;
 
-    public ClientMapper(AccountMapper accountMapper) {
+    public ClientMapper(AccountMapper accountMapper, UserRepository userRepository) {
         this.accountMapper = accountMapper;
+        this.userRepository = userRepository;
     }
 
     /**
@@ -57,6 +60,9 @@ public class ClientMapper {
      * Convertit une entité Client en ClientResponse (sans les comptes)
      */
     public ClientResponse toResponse(Client client) {
+        // Récupérer le User associé pour obtenir le statut enabled
+        var userOpt = userRepository.findByClientId(client.getId());
+        
         return ClientResponse.builder()
                 .id(client.getId())
                 .nom(client.getNom())
@@ -70,6 +76,8 @@ public class ClientMapper {
                 .nationalite(client.getNationalite())
                 .createdAt(client.getCreatedAt())
                 .nombreComptes(client.getComptes() != null ? client.getComptes().size() : 0)
+                .enabled(userOpt.map(u -> u.getEnabled()).orElse(null))
+                .userId(userOpt.map(u -> u.getId()).orElse(null))
                 .build();
     }
 
@@ -82,6 +90,9 @@ public class ClientMapper {
                         .map(accountMapper::toResponse)
                         .collect(Collectors.toList())
                 : Collections.emptyList();
+
+        // Récupérer le User associé pour obtenir le statut enabled
+        var userOpt = userRepository.findByClientId(client.getId());
 
         return ClientResponse.builder()
                 .id(client.getId())
@@ -97,6 +108,8 @@ public class ClientMapper {
                 .createdAt(client.getCreatedAt())
                 .nombreComptes(comptes.size())
                 .comptes(comptes)
+                .enabled(userOpt.map(u -> u.getEnabled()).orElse(null))
+                .userId(userOpt.map(u -> u.getId()).orElse(null))
                 .build();
     }
 

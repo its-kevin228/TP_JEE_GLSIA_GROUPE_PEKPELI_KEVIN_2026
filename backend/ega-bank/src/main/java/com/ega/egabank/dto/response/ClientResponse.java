@@ -33,4 +33,6 @@ public class ClientResponse {
     private LocalDateTime createdAt;
     private int nombreComptes;
     private List<AccountResponse> comptes;
+    private Boolean enabled; // Statut d'activation du compte utilisateur associé
+    private Long userId; // ID de l'utilisateur associé
 }

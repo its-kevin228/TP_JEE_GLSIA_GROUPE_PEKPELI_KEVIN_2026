@@ -4,6 +4,7 @@ import { Router, RouterLink } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { ClientResponse } from '../models/client.model';
 import { ClientService } from '../services/client.service';
+import { UserService } from '../services/user.service';
 import { AppStore } from '../stores/app.store';
 
 @Component({
@@ -22,6 +23,7 @@ export class ClientsComponent implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private clientService: ClientService,
+    private userService: UserService,
     private store: AppStore,
     private cdr: ChangeDetectorRef
   ) { }
@@ -85,6 +87,44 @@ export class ClientsComponent implements OnInit, OnDestroy {
         this.loadClients(); // Reload list
       },
       error: (err) => alert('Failed to delete client')
+    });
+  }
+
+  activateClient(client: ClientResponse) {
+    if (!client.userId) {
+      alert('No user account associated with this client');
+      return;
+    }
+
+    if (!confirm(`Activate account for ${client.prenom} ${client.nom}?`)) return;
+
+    this.userService.activate(client.userId).subscribe({
+      next: () => {
+        this.loadClients(); // Reload list to update status
+      },
+      error: (err) => {
+        console.error('Failed to activate account', err);
+        alert('Failed to activate account. Please try again.');
+      }
+    });
+  }
+
+  deactivateClient(client: ClientResponse) {
+    if (!client.userId) {
+      alert('No user account associated with this client');
+      return;
+    }
+
+    if (!confirm(`Deactivate account for ${client.prenom} ${client.nom}?`)) return;
+
+    this.userService.deactivate(client.userId).subscribe({
+      next: () => {
+        this.loadClients(); // Reload list to update status
+      },
+      error: (err) => {
+        console.error('Failed to deactivate account', err);
+        alert('Failed to deactivate account. Please try again.');
+      }
     });
   }
 }

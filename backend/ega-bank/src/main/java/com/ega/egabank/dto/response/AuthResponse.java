@@ -22,6 +22,7 @@ public class AuthResponse {
     private String email;
     private String role;
     private Boolean mustChangePassword;
+    private Boolean accountPending; // true si le compte est en attente de validation
 
     public static AuthResponse of(String accessToken, String refreshToken, Long expiresIn,
             String username, String email, String role, Boolean mustChangePassword) {
@@ -34,6 +35,21 @@ public class AuthResponse {
                 .email(email)
                 .role(role)
                 .mustChangePassword(mustChangePassword)
+                .accountPending(false)
+                .build();
+    }
+
+    public static AuthResponse pending(String username, String email, String role) {
+        return AuthResponse.builder()
+                .accessToken(null)
+                .refreshToken(null)
+                .tokenType(null)
+                .expiresIn(0L)
+                .username(username)
+                .email(email)
+                .role(role)
+                .mustChangePassword(false)
+                .accountPending(true)
                 .build();
     }
 }

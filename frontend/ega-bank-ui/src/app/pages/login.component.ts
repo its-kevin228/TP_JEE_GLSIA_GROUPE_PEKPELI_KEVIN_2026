@@ -1,13 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
   template: `
     <div class="login-layout">
       <div class="card login-card">
@@ -68,7 +68,7 @@ import { AuthService } from '../services/auth.service';
         </form>
 
         <div class="footer">
-          Contact your administrator if you need an account.
+          Don't have an account? <a routerLink="/register" class="link">Sign up</a>
         </div>
       </div>
     </div>

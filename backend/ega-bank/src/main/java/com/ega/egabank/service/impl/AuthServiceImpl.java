@@ -9,11 +9,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.ega.egabank.dto.request.AdminCreateUserRequest;
 import com.ega.egabank.dto.request.LoginRequest;
+import com.ega.egabank.dto.request.RegisterRequest;
 import com.ega.egabank.dto.response.AuthResponse;
 import com.ega.egabank.entity.Client;
 import com.ega.egabank.entity.User;
 import com.ega.egabank.enums.Role;
 import com.ega.egabank.exception.DuplicateResourceException;
+import com.ega.egabank.exception.OperationNotAllowedException;
 import com.ega.egabank.mapper.ClientMapper;
 import com.ega.egabank.repository.ClientRepository;
 import com.ega.egabank.repository.UserRepository;
@@ -46,13 +48,22 @@ public class AuthServiceImpl implements AuthService {
     public AuthResponse login(LoginRequest request) {
         log.info("Tentative de connexion pour: {}", request.getUsername());
 
+        // Vérifier d'abord si le compte existe et est activé
+        User user = userRepository.findByUsername(request.getUsername())
+                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+
+        // Vérifier si le compte est activé
+        if (!user.getEnabled()) {
+            log.warn("Tentative de connexion avec un compte inactif: {}", request.getUsername());
+            throw new OperationNotAllowedException(
+                    "Votre compte est en attente de validation par un administrateur. " +
+                    "Vous recevrez un email une fois votre compte activé.");
+        }
+
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getUsername(),
                         request.getPassword()));
-
-        User user = userRepository.findByUsername(request.getUsername())
-                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
 
         String accessToken = tokenProvider.generateAccessToken(authentication);
         String refreshToken = tokenProvider.generateRefreshToken(user.getUsername());
@@ -67,6 +78,50 @@ public class AuthServiceImpl implements AuthService {
                 user.getEmail(),
                 user.getRole().name(),
                 user.getMustChangePassword());
+    }
+
+    @Override
+    public AuthResponse register(RegisterRequest request) {
+        log.info("Inscription d'un nouvel utilisateur: {}", request.getUsername());
+
+        // 1. VALIDATION
+        if (userRepository.existsByUsername(request.getUsername())) {
+            throw new DuplicateResourceException("Utilisateur", "username", request.getUsername());
+        }
+
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new DuplicateResourceException("Utilisateur", "email", request.getEmail());
+        }
+
+        // 2. CRÉATION DU CLIENT (données minimales)
+        Client client = Client.builder()
+                .courriel(request.getEmail())
+                .nom("À compléter")
+                .prenom("À compléter")
+                .build();
+
+        client = clientRepository.save(client);
+
+        // 3. CRÉATION DU USER (INACTIF - en attente de validation)
+        User user = User.builder()
+                .username(request.getUsername())
+                .email(request.getEmail())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .role(Role.ROLE_USER)
+                .enabled(false) // Compte inactif jusqu'à validation par admin
+                .mustChangePassword(false)
+                .client(client)
+                .build();
+
+        user = userRepository.save(user);
+
+        log.info("Compte créé en attente de validation pour: {}", request.getUsername());
+
+        // 4. Retourner une réponse indiquant que le compte est en attente
+        return AuthResponse.pending(
+                user.getUsername(),
+                user.getEmail(),
+                user.getRole().name());
     }
 
     @Override

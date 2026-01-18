@@ -11,6 +11,8 @@ import { ClientCreateComponent } from './pages/client-create.component';
 import { ClientsComponent } from './pages/clients.component';
 import { DashboardComponent } from './pages/dashboard.component';
 import { LoginComponent } from './pages/login.component';
+import { RegisterComponent } from './pages/register.component';
+import { PendingUsersComponent } from './pages/pending-users.component';
 import { SettingsComponent } from './pages/settings.component';
 import { TransactionFormComponent } from './pages/transaction-form.component';
 import { TransactionsComponent } from './pages/transactions.component';
@@ -20,6 +22,7 @@ export const routes: Routes = [
 	// Routes publiques
 	{ path: '', component: LandingComponent },
 	{ path: 'login', component: LoginComponent },
+	{ path: 'register', component: RegisterComponent },
 
 	// Routes ADMIN uniquement (gestion des clients et comptes pour tous)
 	{
@@ -27,6 +30,7 @@ export const routes: Routes = [
 		canActivate: [AdminGuard],
 		children: [
 			{ path: 'dashboard', component: DashboardComponent },
+			{ path: 'pending-users', component: PendingUsersComponent },
 			{ path: 'clients', component: ClientsComponent },
 			{ path: 'clients/new', component: ClientCreateComponent },
 			{ path: 'accounts', component: AccountsComponent },
