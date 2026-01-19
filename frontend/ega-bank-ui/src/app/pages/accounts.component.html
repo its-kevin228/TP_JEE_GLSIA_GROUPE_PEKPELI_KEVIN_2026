@@ -25,12 +25,12 @@
             <table>
                 <thead>
                     <tr>
-                        <th>Account</th>
-                        <th *ngIf="isAdmin">Client</th>
-                        <th>Status</th>
-                        <th>Created</th>
-                        <th class="text-right">Balance</th>
-                        <th>Actions</th>
+                        <th style="min-width: 180px;">Account</th>
+                        <th *ngIf="isAdmin" style="min-width: 150px;">Client</th>
+                        <th style="min-width: 100px;">Status</th>
+                        <th style="min-width: 120px;">Created</th>
+                        <th class="text-right" style="min-width: 130px;">Balance</th>
+                        <th style="min-width: 100px;">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -39,7 +39,7 @@
                             <div class="skeleton skeleton-text" style="width: 80%;"></div>
                             <div class="skeleton skeleton-text" style="width: 50%;"></div>
                         </td>
-                        <td>
+                        <td *ngIf="isAdmin">
                             <div class="skeleton skeleton-text"></div>
                         </td>
                         <td>
@@ -66,12 +66,12 @@
             <table>
                 <thead>
                     <tr>
-                        <th>Account</th>
-                        <th>Client</th>
-                        <th>Status</th>
-                        <th>Created</th>
-                        <th class="text-right">Balance</th>
-                        <th>Actions</th>
+                        <th style="min-width: 180px;">Account</th>
+                        <th *ngIf="isAdmin" style="min-width: 150px;">Client</th>
+                        <th style="min-width: 100px;">Status</th>
+                        <th style="min-width: 120px;">Created</th>
+                        <th class="text-right" style="min-width: 130px;">Balance</th>
+                        <th style="min-width: 100px;">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -98,10 +98,10 @@
                                 {{ getStatusDisplay(account.actif) }}
                             </span>
                         </td>
-                        <td class="text-gray-500 text-sm">
-                            {{ account.dateCreation | date:'short' }}
+                        <td class="text-gray-500 text-sm whitespace-nowrap">
+                            {{ account.dateCreation | date:'dd/MM/yyyy' }}
                         </td>
-                        <td class="text-right font-mono font-bold">
+                        <td class="text-right font-mono font-bold whitespace-nowrap">
                             {{ account.solde | currency:'XOF':'symbol':'1.0-0' }}
                         </td>
                         <td>
@@ -109,7 +109,7 @@
                                 <button (click)="viewTransactions(account.numeroCompte)" class="btn btn-sm btn-outline-info" title="View Transactions">
                                     <i class="ri-history-line"></i>
                                 </button>
-                                <button *ngIf="isAdmin" (click)="toggleStatus(account)" class="btn btn-sm" [class.btn-outline-success]="!account.actif" [class.btn-outline-warning]="account.actif" :title="account.actif ? 'Deactivate Account' : 'Activate Account'">
+                                <button *ngIf="isAdmin" (click)="toggleStatus(account)" class="btn btn-sm" [class.btn-outline-success]="!account.actif" [class.btn-outline-warning]="account.actif" [title]="account.actif ? 'Deactivate Account' : 'Activate Account'">
                                     <i [class]="account.actif ? 'ri-stop-circle-line' : 'ri-play-circle-line'"></i>
                                 </button>
                             </div>
