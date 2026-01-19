@@ -4,6 +4,12 @@ import { ClientRequest, ClientResponse } from '../models/client.model';
 import { PageResponse } from '../models/page.model';
 import { ApiService } from './api.service';
 
+export interface ProfileUpdateRequest {
+  telephone?: string;
+  adresse?: string;
+  avatar?: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class ClientService {
   constructor(private api: ApiService) {}
@@ -26,6 +32,10 @@ export class ClientService {
 
   getMe(): Observable<ClientResponse> {
     return this.api.get<ClientResponse>(`/clients/me`);
+  }
+
+  updateProfile(payload: ProfileUpdateRequest): Observable<ClientResponse> {
+    return this.api.put<ClientResponse>(`/clients/me`, payload);
   }
 
   create(payload: ClientRequest): Observable<ClientResponse> {

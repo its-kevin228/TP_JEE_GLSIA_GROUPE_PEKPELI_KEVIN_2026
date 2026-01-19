@@ -55,6 +55,9 @@ public class Client {
 
 	private String nationalite;
 
+	@Column(columnDefinition = "TEXT")
+	private String avatar;
+
 	@Column(name = "created_at", updatable = false)
 	private LocalDateTime createdAt;
 

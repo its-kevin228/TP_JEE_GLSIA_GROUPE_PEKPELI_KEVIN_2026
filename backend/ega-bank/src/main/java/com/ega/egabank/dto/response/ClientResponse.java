@@ -30,6 +30,7 @@ public class ClientResponse {
     private String telephone;
     private String courriel;
     private String nationalite;
+    private String avatar;
     private LocalDateTime createdAt;
     private int nombreComptes;
     private List<AccountResponse> comptes;

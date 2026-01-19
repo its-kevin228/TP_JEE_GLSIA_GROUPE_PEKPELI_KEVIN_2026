@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ClientResponse } from '../models/client.model';
-import { ClientService } from '../services/client.service';
+import { ClientService, ProfileUpdateRequest } from '../services/client.service';
 import { AuthService } from '../services/auth.service';
 
 @Component({
@@ -12,7 +12,7 @@ import { AuthService } from '../services/auth.service';
     template: `
     <div class="p-6 max-w-4xl mx-auto">
       <div class="mb-8">
-        <h1 class="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-blue-600 mb-2">Settings</h1>
+        <h1 class="text-3xl font-bold text-gray-800 mb-2">Settings</h1>
         <p class="text-gray-500">Manage your account preferences and security settings.</p>
       </div>
 
@@ -20,7 +20,7 @@ import { AuthService } from '../services/auth.service';
         <!-- Sidebar Navigation (within settings) -->
         <div class="md:col-span-1">
           <div class="card p-2 sticky top-24">
-            <button 
+            <button
               *ngIf="!isAdmin"
               (click)="activeTab = 'profile'"
               [class.bg-blue-50]="activeTab === 'profile'"
@@ -29,163 +29,177 @@ import { AuthService } from '../services/auth.service';
               <i class="ri-user-settings-line text-xl"></i>
               <span class="font-medium">Profile Settings</span>
             </button>
-            <button 
+            <button
               (click)="activeTab = 'security'"
               [class.bg-blue-50]="activeTab === 'security'"
               [class.text-primary]="activeTab === 'security'"
-              class="w-full text-left px-4 py-3 rounded-lg flex items-center gap-3 transition-colors hover:bg-gray-50 mb-1">
+              class="w-full text-left px-4 py-3 rounded-lg flex items-center gap-3 transition-colors hover:bg-gray-50">
               <i class="ri-shield-key-line text-xl"></i>
               <span class="font-medium">Security</span>
-            </button>
-            <button 
-              *ngIf="!isAdmin"
-              (click)="activeTab = 'notifications'"
-              [class.bg-blue-50]="activeTab === 'notifications'"
-              [class.text-primary]="activeTab === 'notifications'"
-              class="w-full text-left px-4 py-3 rounded-lg flex items-center gap-3 transition-colors hover:bg-gray-50">
-              <i class="ri-notification-3-line text-xl"></i>
-              <span class="font-medium">Notifications</span>
             </button>
           </div>
         </div>
 
         <!-- Content Area -->
         <div class="md:col-span-2 space-y-6">
-          
+
           <!-- Profile Tab -->
-          <div *ngIf="!isAdmin && activeTab === 'profile'" class="card p-6 animate-fade-in">
-            <div *ngIf="isLoading" class="text-sm text-gray-500 mb-4">Chargement du profil...</div>
-            <h2 class="text-xl font-bold mb-6 flex items-center gap-2">
-              <i class="ri-user-smile-line text-primary"></i> Personal Information
-            </h2>
-            
-            <div class="flex items-center gap-6 mb-8">
-              <div class="relative group cursor-pointer">
-                <div class="w-24 h-24 rounded-full bg-gray-100 flex items-center justify-center text-4xl text-gray-400 border-2 border-dashed border-gray-300 group-hover:border-primary transition-colors">
-                  <i class="ri-camera-add-line"></i>
+          <div *ngIf="!isAdmin && activeTab === 'profile'" class="space-y-6 animate-fade-in">
+
+            <!-- Avatar Section Card -->
+            <div class="card p-6">
+              <h2 class="text-lg font-bold mb-4 flex items-center gap-2">
+                <i class="ri-image-line text-primary"></i> Photo de profil
+              </h2>
+
+              <div class="flex flex-col sm:flex-row items-center gap-6">
+                <!-- Avatar Preview -->
+                <div class="relative">
+                  <div class="w-32 h-32 rounded-full overflow-hidden bg-gray-100 border-4 border-white shadow-lg">
+                    <img *ngIf="avatarPreview" [src]="avatarPreview" alt="Avatar" class="w-full h-full object-cover" />
+                    <div *ngIf="!avatarPreview" class="w-full h-full flex items-center justify-center text-gray-400">
+                      <i class="ri-user-3-line text-5xl"></i>
+                    </div>
+                  </div>
+                  <button
+                    (click)="avatarInput.click()"
+                    class="absolute bottom-0 right-0 w-10 h-10 rounded-full bg-white border-2 border-gray-200 text-gray-600 flex items-center justify-center shadow-md hover:bg-gray-50 transition-colors">
+                    <i class="ri-camera-line"></i>
+                  </button>
+                  <input
+                    #avatarInput
+                    type="file"
+                    accept="image/*"
+                    class="hidden"
+                    (change)="onAvatarSelected($event)" />
                 </div>
-                <div class="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center shadow-lg">
-                  <i class="ri-edit-2-line text-sm"></i>
+
+                <!-- Avatar Actions -->
+                <div class="flex-1 text-center sm:text-left">
+                  <h3 class="font-semibold text-gray-800">{{ profile?.nomComplet || 'Votre nom' }}</h3>
+                  <p class="text-sm text-gray-500 mb-4">{{ profile?.courriel || '---' }}</p>
+
+                  <div class="flex flex-wrap gap-2 justify-center sm:justify-start">
+                    <button (click)="avatarInput.click()" class="btn btn-primary text-sm">
+                      <i class="ri-upload-2-line"></i> Changer la photo
+                    </button>
+                    <button *ngIf="avatarPreview" (click)="removeAvatar()" class="btn btn-secondary text-sm">
+                      <i class="ri-delete-bin-line"></i> Supprimer
+                    </button>
+                  </div>
+                  <p class="text-xs text-gray-400 mt-3">JPG, PNG ou GIF. Max 2MB.</p>
                 </div>
-              </div>
-              <div>
-                <h3 class="font-bold text-lg">{{ profile?.nomComplet || 'Profil Client' }}</h3>
-                <p class="text-gray-500 text-sm">{{ profile?.courriel || '---' }}</p>
-                <button class="text-primary text-sm font-medium hover:underline mt-1">Change Avatar</button>
               </div>
             </div>
 
-            <form class="space-y-4">
-              <div class="grid grid-cols-2 gap-4">
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
-                  <input type="text" class="input w-full" [value]="profile?.prenom || ''" readonly />
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
-                  <input type="text" class="input w-full" [value]="profile?.nom || ''" readonly />
-                </div>
+            <!-- Personal Information Card -->
+            <div class="card p-6">
+              <div *ngIf="isLoading" class="text-sm text-gray-500 mb-4">
+                <i class="ri-loader-4-line animate-spin"></i> Chargement du profil...
               </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
-                <input type="email" class="input w-full" [value]="profile?.courriel || ''" readonly />
-                <p class="text-xs text-gray-500 mt-1">Contact support to change email.</p>
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
-                <input type="tel" class="input w-full" [value]="profile?.telephone || ''" />
-              </div>
+              <h2 class="text-lg font-bold mb-4 flex items-center gap-2">
+                <i class="ri-user-line text-primary"></i> Informations personnelles
+              </h2>
 
-              <div class="pt-4 flex justify-end">
-                <button type="button" class="btn btn-primary" (click)="saveProfile()">
-                  <span *ngIf="!isSaving">Save Changes</span>
-                  <span *ngIf="isSaving"><i class="ri-loader-4-line animate-spin"></i> Saving...</span>
-                </button>
-              </div>
-            </form>
+              <form class="space-y-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-sm font-medium text-gray-600 mb-1.5">Prénom</label>
+                    <input type="text" class="input w-full" [value]="profile?.prenom || ''" readonly />
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-600 mb-1.5">Nom</label>
+                    <input type="text" class="input w-full" [value]="profile?.nom || ''" readonly />
+                  </div>
+                </div>
+
+                <div>
+                  <label class="block text-sm font-medium text-gray-600 mb-1.5">Adresse e-mail</label>
+                  <div class="input-icon-wrapper">
+                    <i class="ri-mail-line input-icon"></i>
+                    <input type="email" class="input-with-icon" [value]="profile?.courriel || ''" readonly />
+                  </div>
+                  <p class="text-xs text-gray-500 mt-1">Contactez le support pour modifier votre e-mail.</p>
+                </div>
+
+                <div>
+                  <label class="block text-sm font-medium text-gray-600 mb-1.5">Numéro de téléphone</label>
+                  <div class="input-icon-wrapper">
+                    <i class="ri-phone-line input-icon"></i>
+                    <input type="tel" class="input-with-icon" [(ngModel)]="phoneNumber" name="phone" placeholder="+228 00 00 00 00" />
+                  </div>
+                </div>
+
+                <div>
+                  <label class="block text-sm font-medium text-gray-600 mb-1.5">Adresse</label>
+                  <div class="input-icon-wrapper">
+                    <i class="ri-map-pin-line input-icon"></i>
+                    <input type="text" class="input-with-icon" [(ngModel)]="address" name="address" placeholder="Votre adresse" />
+                  </div>
+                </div>
+
+                <div class="pt-4 border-t flex justify-end">
+                  <button type="button" class="btn btn-primary" (click)="saveProfile()" [disabled]="isSaving">
+                    <i *ngIf="!isSaving" class="ri-save-line"></i>
+                    <i *ngIf="isSaving" class="ri-loader-4-line animate-spin"></i>
+                    {{ isSaving ? 'Enregistrement...' : 'Enregistrer' }}
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
 
           <!-- Security Tab -->
           <div *ngIf="activeTab === 'security'" class="card p-6 animate-fade-in">
-             <h2 class="text-xl font-bold mb-6 flex items-center gap-2">
-              <i class="ri-lock-password-line text-primary"></i> Password & Security
+             <h2 class="text-lg font-bold mb-6 flex items-center gap-2">
+              <i class="ri-lock-password-line text-primary"></i> Mot de passe & Sécurité
             </h2>
 
             <form class="space-y-4" (ngSubmit)="updatePassword()">
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Current Password</label>
-                <input type="password" class="input w-full" placeholder="Enter current password" [(ngModel)]="passwordForm.currentPassword" name="currentPassword" />
-              </div>
-              <div class="grid grid-cols-2 gap-4">
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">New Password</label>
-                  <input type="password" class="input w-full" placeholder="Enter new password" [(ngModel)]="passwordForm.newPassword" name="newPassword" />
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Confirm New Password</label>
-                  <input type="password" class="input w-full" placeholder="Confirm new password" [(ngModel)]="passwordForm.confirmPassword" name="confirmPassword" />
+                <label class="block text-sm font-medium text-gray-600 mb-1.5">Mot de passe actuel</label>
+                <div class="input-icon-wrapper">
+                  <i class="ri-lock-line input-icon"></i>
+                  <input type="password" class="input-with-icon" placeholder="Entrez votre mot de passe actuel" [(ngModel)]="passwordForm.currentPassword" name="currentPassword" />
                 </div>
               </div>
-              
-              <div class="bg-blue-50 text-blue-700 p-4 rounded-lg text-sm flex gap-3 items-start my-4">
-                <i class="ri-information-line text-lg mt-0.5"></i>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <p class="font-bold">Password Requirements:</p>
+                  <label class="block text-sm font-medium text-gray-600 mb-1.5">Nouveau mot de passe</label>
+                  <div class="input-icon-wrapper">
+                    <i class="ri-lock-password-line input-icon"></i>
+                    <input type="password" class="input-with-icon" placeholder="Nouveau mot de passe" [(ngModel)]="passwordForm.newPassword" name="newPassword" />
+                  </div>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-600 mb-1.5">Confirmer le mot de passe</label>
+                  <div class="input-icon-wrapper">
+                    <i class="ri-lock-password-line input-icon"></i>
+                    <input type="password" class="input-with-icon" placeholder="Confirmez le mot de passe" [(ngModel)]="passwordForm.confirmPassword" name="confirmPassword" />
+                  </div>
+                </div>
+              </div>
+
+              <div class="bg-gray-50 border border-gray-200 p-4 rounded-lg text-sm flex gap-3 items-start my-4">
+                <i class="ri-information-line text-lg text-gray-500 mt-0.5"></i>
+                <div class="text-gray-600">
+                  <p class="font-medium text-gray-700">Exigences du mot de passe :</p>
                   <ul class="list-disc list-inside mt-1 space-y-1">
-                    <li>Minimum 8 characters long</li>
-                    <li>At least one uppercase character</li>
-                    <li>At least one number</li>
-                    <li>At least one special character</li>
+                    <li>Minimum 8 caractères</li>
+                    <li>Au moins une lettre majuscule</li>
+                    <li>Au moins un chiffre</li>
+                    <li>Au moins un caractère spécial</li>
                   </ul>
                 </div>
               </div>
 
               <div class="pt-2 flex justify-end">
-                <button type="submit" class="btn btn-primary">Update Password</button>
+                <button type="submit" class="btn btn-primary">
+                  <i class="ri-refresh-line"></i> Mettre à jour
+                </button>
               </div>
             </form>
-          </div>
-
-           <!-- Notifications Tab -->
-          <div *ngIf="!isAdmin && activeTab === 'notifications'" class="card p-6 animate-fade-in">
-             <h2 class="text-xl font-bold mb-6 flex items-center gap-2">
-              <i class="ri-notification-badge-line text-primary"></i> Notification Preferences
-            </h2>
-            
-            <div class="space-y-4">
-              <div class="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50">
-                <div>
-                  <div class="font-medium">Email Notifications</div>
-                  <div class="text-sm text-gray-500">Receive daily summaries and alerts via email</div>
-                </div>
-                <label class="relative inline-flex items-center cursor-pointer">
-                  <input type="checkbox" checked class="sr-only peer">
-                  <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-100 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-                </label>
-              </div>
-
-              <div class="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50">
-                <div>
-                  <div class="font-medium">Login Alerts</div>
-                  <div class="text-sm text-gray-500">Get notified when your account is accessed from a new device</div>
-                </div>
-                <label class="relative inline-flex items-center cursor-pointer">
-                  <input type="checkbox" checked class="sr-only peer">
-                   <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-100 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-                </label>
-              </div>
-
-               <div class="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50">
-                <div>
-                  <div class="font-medium">Marketing Emails</div>
-                  <div class="text-sm text-gray-500">Receive news about new features and offers</div>
-                </div>
-                <label class="relative inline-flex items-center cursor-pointer">
-                  <input type="checkbox" class="sr-only peer">
-                   <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-100 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-                </label>
-              </div>
-            </div>
           </div>
 
         </div>
@@ -201,28 +215,81 @@ import { AuthService } from '../services/auth.service';
       to { opacity: 1; transform: translateY(0); }
     }
     .input {
-      @apply w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-100 focus:border-blue-500 transition-all outline-none;
+      width: 100%;
+      padding: 0.625rem 1rem;
+      border: 1px solid #d1d5db;
+      border-radius: 0.5rem;
+      outline: none;
+      background: white;
+      transition: all 0.2s;
     }
-    .btn {
-      @apply px-6 py-2 rounded-lg font-medium transition-all shadow-sm active:scale-95;
+    .input:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
     }
-    .btn-primary {
-      @apply bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:shadow-md hover:opacity-90;
+    .input:read-only {
+      background: #f9fafb;
+      color: #6b7280;
+      cursor: not-allowed;
+    }
+    .input-icon-wrapper {
+      display: flex;
+      align-items: center;
+      border: 1px solid #d1d5db;
+      border-radius: 0.5rem;
+      background: white;
+      overflow: hidden;
+      transition: all 0.2s;
+    }
+    .input-icon-wrapper:focus-within {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    .input-icon-wrapper:has(input:read-only) {
+      background: #f9fafb;
+    }
+    .input-icon {
+      padding: 0 0.75rem;
+      color: #9ca3af;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+    }
+    .input-with-icon {
+      flex: 1;
+      padding: 0.625rem 1rem 0.625rem 0;
+      border: none;
+      outline: none;
+      background: transparent;
+      width: 100%;
+    }
+    .input-with-icon:read-only {
+      color: #6b7280;
+      cursor: not-allowed;
     }
   `]
 })
 export class SettingsComponent implements OnInit {
-    activeTab: 'profile' | 'security' | 'notifications' = 'profile';
+    activeTab: 'profile' | 'security' = 'profile';
     isSaving = false;
     isLoading = false;
     profile: ClientResponse | null = null;
+    avatarPreview: string | null = null;
+    avatarFile: File | null = null;
+    phoneNumber = '';
+    address = '';
+
     passwordForm = {
       currentPassword: '',
       newPassword: '',
       confirmPassword: ''
     };
 
-    constructor(private clientService: ClientService, private auth: AuthService) {}
+    constructor(
+        private clientService: ClientService,
+        private auth: AuthService,
+        private cdr: ChangeDetectorRef
+    ) {}
 
     get isAdmin(): boolean {
       return this.auth.isAdmin();
@@ -241,6 +308,12 @@ export class SettingsComponent implements OnInit {
         this.clientService.getMe().subscribe({
             next: (profile) => {
                 this.profile = profile;
+                // Charger les données depuis le profil (base de données)
+                this.phoneNumber = profile.telephone || '';
+                this.address = profile.adresse || '';
+                if (profile.avatar) {
+                    this.avatarPreview = profile.avatar;
+                }
                 this.isLoading = false;
             },
             error: () => {
@@ -249,23 +322,71 @@ export class SettingsComponent implements OnInit {
         });
     }
 
+    onAvatarSelected(event: Event) {
+        const input = event.target as HTMLInputElement;
+        if (input.files && input.files[0]) {
+            const file = input.files[0];
+
+            // Check file size (max 2MB)
+            if (file.size > 2 * 1024 * 1024) {
+                alert('Le fichier est trop volumineux. Maximum 2MB.');
+                return;
+            }
+
+            // Check file type
+            if (!file.type.startsWith('image/')) {
+                alert('Veuillez sélectionner une image valide.');
+                return;
+            }
+
+            this.avatarFile = file;
+
+            // Create preview
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                this.avatarPreview = e.target?.result as string;
+                this.cdr.detectChanges();
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    removeAvatar() {
+        this.avatarPreview = null;
+        this.avatarFile = null;
+    }
+
     saveProfile() {
         this.isSaving = true;
-        // Simulate API call
-        setTimeout(() => {
-            this.isSaving = false;
-            alert('Profile updated successfully!');
-        }, 1000);
+
+        const payload: ProfileUpdateRequest = {
+            telephone: this.phoneNumber,
+            adresse: this.address,
+            avatar: this.avatarPreview || undefined
+        };
+
+        this.clientService.updateProfile(payload).subscribe({
+            next: (updatedProfile) => {
+                this.profile = updatedProfile;
+                this.isSaving = false;
+                alert('Profil mis à jour avec succès !');
+            },
+            error: (err) => {
+                this.isSaving = false;
+                console.error('Profile update failed', err);
+                alert(err.error?.message || 'Échec de la mise à jour du profil.');
+            }
+        });
     }
 
     updatePassword() {
         if (!this.passwordForm.currentPassword || !this.passwordForm.newPassword) {
-            alert('Please complete all password fields.');
+            alert('Veuillez remplir tous les champs.');
             return;
         }
 
         if (this.passwordForm.newPassword !== this.passwordForm.confirmPassword) {
-            alert('New password and confirmation do not match.');
+            alert('Les mots de passe ne correspondent pas.');
             return;
         }
 
@@ -276,11 +397,11 @@ export class SettingsComponent implements OnInit {
             next: () => {
                 localStorage.setItem('mustChangePassword', 'false');
                 this.passwordForm = { currentPassword: '', newPassword: '', confirmPassword: '' };
-                alert('Password updated successfully!');
+                alert('Mot de passe mis à jour avec succès !');
             },
             error: (err) => {
                 console.error('Password update failed', err);
-                alert(err.error?.message || 'Failed to update password.');
+                alert(err.error?.message || 'Échec de la mise à jour du mot de passe.');
             }
         });
     }

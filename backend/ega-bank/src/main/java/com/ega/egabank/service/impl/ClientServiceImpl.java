@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ega.egabank.dto.request.ClientRequest;
+import com.ega.egabank.dto.request.ProfileUpdateRequest;
 import com.ega.egabank.dto.response.ClientResponse;
 import com.ega.egabank.dto.response.PageResponse;
 import com.ega.egabank.entity.Client;
@@ -38,9 +39,9 @@ public class ClientServiceImpl implements ClientService {
     @Override
     @Transactional(readOnly = true)
     public PageResponse<ClientResponse> getAllClients(int page, int size) {
-        log.debug("Récupération de tous les clients - page: {}, size: {}", page, size);
+        log.debug("Récupération de tous les clients (non-admin) - page: {}, size: {}", page, size);
         Pageable pageable = PageRequest.of(page, size, Sort.by("nom", "prenom").ascending());
-        Page<Client> clientPage = clientRepository.findAll(pageable);
+        Page<Client> clientPage = clientRepository.findAllNonAdmin(pageable);
 
         return PageResponse.of(
                 clientMapper.toResponseList(clientPage.getContent()),
@@ -53,9 +54,9 @@ public class ClientServiceImpl implements ClientService {
     @Override
     @Transactional(readOnly = true)
     public PageResponse<ClientResponse> searchClients(String search, int page, int size) {
-        log.debug("Recherche de clients avec: '{}' - page: {}, size: {}", search, page, size);
+        log.debug("Recherche de clients (non-admin) avec: '{}' - page: {}, size: {}", search, page, size);
         Pageable pageable = PageRequest.of(page, size, Sort.by("nom", "prenom").ascending());
-        Page<Client> clientPage = clientRepository.search(search, pageable);
+        Page<Client> clientPage = clientRepository.searchNonAdmin(search, pageable);
 
         return PageResponse.of(
                 clientMapper.toResponseList(clientPage.getContent()),
@@ -141,5 +142,28 @@ public class ClientServiceImpl implements ClientService {
     private Client findClientById(Long id) {
         return clientRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Client", "id", id));
+    }
+
+    @Override
+    @Transactional
+    public ClientResponse updateProfile(Long id, ProfileUpdateRequest request) {
+        log.info("Mise à jour du profil client - id: {}", id);
+
+        Client client = findClientById(id);
+
+        if (request.getTelephone() != null) {
+            client.setTelephone(request.getTelephone());
+        }
+        if (request.getAdresse() != null) {
+            client.setAdresse(request.getAdresse());
+        }
+        if (request.getAvatar() != null) {
+            client.setAvatar(request.getAvatar());
+        }
+
+        client = clientRepository.save(client);
+
+        log.info("Profil client mis à jour avec succès - id: {}", id);
+        return clientMapper.toResponse(client);
     }
 }

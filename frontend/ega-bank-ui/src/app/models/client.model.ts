@@ -14,6 +14,7 @@ export interface ClientResponse {
   telephone?: string;
   courriel?: string;
   nationalite?: string;
+  avatar?: string; // Base64 encoded image
   createdAt?: string;
   nombreComptes?: number;
   comptes?: AccountResponse[];

@@ -52,7 +52,7 @@
                             {{client.nombreComptes || 0}} accounts
                         </div>
                         <!-- Status Badge -->
-                        <div *ngIf="client.enabled !== undefined" 
+                        <div *ngIf="client.enabled !== undefined"
                              [class]="client.enabled ? 'status-badge active' : 'status-badge pending'">
                             <span *ngIf="client.enabled" class="flex items-center gap-1">
                                 <i class="ri-checkbox-circle-fill"></i> Active
@@ -70,23 +70,25 @@
                     <i class="ri-phone-line text-gray-400"></i> {{client.telephone}}
                 </div>
             </div>
-            <div class="flex gap-2 mt-4">
-                <button (click)="viewDetails(client.id)" class="btn btn-secondary text-sm flex-1">
+            <div class="flex gap-2 mt-4 flex-wrap">
+                <button (click)="viewDetails(client.id)" class="btn btn-secondary text-sm flex-1 min-w-[80px]">
                     <i class="ri-edit-line"></i> Edit
                 </button>
-                <button (click)="viewAccounts(client.id)" class="btn btn-primary text-sm flex-1">
+                <button (click)="viewAccounts(client.id)" class="btn btn-primary text-sm flex-1 min-w-[80px]">
                     <i class="ri-bank-card-line"></i> Accounts
                 </button>
+            </div>
+            <div class="flex gap-2 mt-2">
                 <!-- Activation Button -->
-                <button *ngIf="client.userId && !client.enabled" 
-                        (click)="activateClient(client)" 
-                        class="btn btn-success text-sm" 
+                <button *ngIf="client.userId && !client.enabled"
+                        (click)="activateClient(client)"
+                        class="btn btn-success text-sm flex-1"
                         title="Activate account">
                     <i class="ri-check-line"></i> Activate
                 </button>
-                <button *ngIf="client.userId && client.enabled" 
-                        (click)="deactivateClient(client)" 
-                        class="btn btn-warning text-sm" 
+                <button *ngIf="client.userId && client.enabled"
+                        (click)="deactivateClient(client)"
+                        class="btn btn-warning text-sm flex-1"
                         title="Deactivate account">
                     <i class="ri-close-line"></i> Deactivate
                 </button>

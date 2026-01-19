@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ega.egabank.dto.request.ClientRequest;
+import com.ega.egabank.dto.request.ProfileUpdateRequest;
 import com.ega.egabank.dto.response.ClientResponse;
 import com.ega.egabank.dto.response.MessageResponse;
 import com.ega.egabank.dto.response.PageResponse;
@@ -83,6 +84,17 @@ public class ClientController {
             throw new OperationNotAllowedException("Aucun client associé à l'utilisateur connecté");
         }
         return ResponseEntity.ok(clientService.getClientWithAccounts(clientId));
+    }
+
+    @Operation(summary = "Mettre à jour le profil du client connecté")
+    @PutMapping("/me")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<ClientResponse> updateMyProfile(@RequestBody ProfileUpdateRequest request) {
+        Long clientId = securityService.getCurrentClientId();
+        if (clientId == null) {
+            throw new OperationNotAllowedException("Aucun client associé à l'utilisateur connecté");
+        }
+        return ResponseEntity.ok(clientService.updateProfile(clientId, request));
     }
 
     @Operation(summary = "Créer un nouveau client")

@@ -29,4 +29,22 @@ public interface ClientRepository extends JpaRepository<Client, Long> {
 
     @Query("SELECT c FROM Client c LEFT JOIN FETCH c.comptes WHERE c.id = :id")
     Optional<Client> findByIdWithAccounts(@Param("id") Long id);
+
+    /**
+     * Récupère tous les clients qui ne sont pas des administrateurs
+     * Exclut les clients associés à un utilisateur avec le rôle ADMIN
+     */
+    @Query("SELECT c FROM Client c WHERE c.id NOT IN " +
+           "(SELECT u.client.id FROM User u WHERE u.role = 'ROLE_ADMIN' AND u.client IS NOT NULL)")
+    Page<Client> findAllNonAdmin(Pageable pageable);
+
+    /**
+     * Recherche parmi les clients non-administrateurs
+     */
+    @Query("SELECT c FROM Client c WHERE " +
+           "c.id NOT IN (SELECT u.client.id FROM User u WHERE u.role = 'ROLE_ADMIN' AND u.client IS NOT NULL) AND " +
+           "(LOWER(c.nom) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+           "LOWER(c.prenom) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+           "LOWER(c.courriel) LIKE LOWER(CONCAT('%', :search, '%')))")
+    Page<Client> searchNonAdmin(@Param("search") String search, Pageable pageable);
 }

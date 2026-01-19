@@ -1,6 +1,7 @@
 package com.ega.egabank.service;
 
 import com.ega.egabank.dto.request.ClientRequest;
+import com.ega.egabank.dto.request.ProfileUpdateRequest;
 import com.ega.egabank.dto.response.ClientResponse;
 import com.ega.egabank.dto.response.PageResponse;
 
@@ -20,6 +21,8 @@ public interface ClientService {
     ClientResponse createClient(ClientRequest request);
 
     ClientResponse updateClient(Long id, ClientRequest request);
+
+    ClientResponse updateProfile(Long id, ProfileUpdateRequest request);
 
     void deleteClient(Long id);
 }
