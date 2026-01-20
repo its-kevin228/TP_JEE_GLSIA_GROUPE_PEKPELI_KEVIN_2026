@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { RouteHelperService } from '../services/route-helper.service';
 import { AccountService } from '../services/account.service';
 import { AuthService } from '../services/auth.service';
@@ -76,7 +77,13 @@ import { ClientService } from '../services/client.service';
       <div style="flex:1;display:flex;justify-content:flex-end;align-items:center;gap:12px;">
         <!-- User Info Display -->
         <div style="display:flex;align-items:center;gap:10px;">
-          <div style="width:32px;height:32px;border-radius:50%;background:#374151;display:flex;align-items:center;justify-content:center;color:white;font-weight:500;font-size:13px;">
+          <img
+            *ngIf="userInfo?.avatar"
+            [src]="userInfo?.avatar"
+            alt="Avatar"
+            style="width:32px;height:32px;border-radius:50%;object-fit:cover;"
+          />
+          <div *ngIf="!userInfo?.avatar" style="width:32px;height:32px;border-radius:50%;background:#374151;display:flex;align-items:center;justify-content:center;color:white;font-weight:500;font-size:13px;">
             {{ userInfo?.initial || 'U' }}
           </div>
           <span style="font-weight:500;color:#374151;font-size:14px;">{{ userInfo?.username || 'Utilisateur' }}</span>
@@ -244,7 +251,7 @@ import { ClientService } from '../services/client.service';
     }
   `]
 })
-export class DashboardHeader {
+export class DashboardHeader implements OnDestroy {
   searchQuery = '';
   showSearch = false;
   isSearching = false;
@@ -254,7 +261,9 @@ export class DashboardHeader {
   showProfile = false;
 
   // Informations utilisateur
-  userInfo: { username: string; email: string; initial: string } | null = null;
+  userInfo: { username: string; email: string; initial: string; avatar?: string } | null = null;
+
+  private readonly subscriptions = new Subscription();
 
   constructor(
     private auth: AuthService,
@@ -264,6 +273,30 @@ export class DashboardHeader {
     private routeHelper: RouteHelperService
   ) {
     this.loadUserInfo();
+
+    this.subscriptions.add(
+      this.clientService.me$.subscribe((me) => {
+        if (!me) return;
+
+        const displayName = (me.nomComplet || `${me.prenom || ''} ${me.nom || ''}`.trim()).trim();
+        const initial = (displayName || 'U').charAt(0).toUpperCase();
+
+        this.userInfo = {
+          username: displayName || this.userInfo?.username || 'Utilisateur',
+          email: me.courriel || this.userInfo?.email || '',
+          initial,
+          avatar: me.avatar
+        };
+      })
+    );
+
+    if (this.auth.isClient()) {
+      this.subscriptions.add(this.clientService.getMe().subscribe());
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 
   private loadUserInfo() {
@@ -277,7 +310,8 @@ export class DashboardHeader {
       this.userInfo = {
         username: username.charAt(0).toUpperCase() + username.slice(1),
         email: info.username,
-        initial: initial
+        initial: initial,
+        avatar: this.userInfo?.avatar
       };
     }
   }
