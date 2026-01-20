@@ -41,41 +41,11 @@ import { CommonModule } from '@angular/common';
         <!-- Geometric Patterns -->
         <div class="absolute inset-0 overflow-hidden pointer-events-none">
           <!-- Grid Pattern -->
-          <div class="absolute inset-0 opacity-[0.02]">
-            <div class="absolute inset-0" style="background-image: linear-gradient(#64748b 1px, transparent 1px), linear-gradient(90deg, #64748b 1px, transparent 1px); background-size: 50px 50px;"></div>
+          <div class="absolute inset-0 opacity-[0.015]">
+            <div class="absolute inset-0" style="background-image: linear-gradient(#64748b 1px, transparent 1px), linear-gradient(90deg, #64748b 1px, transparent 1px); background-size: 64px 64px;"></div>
           </div>
 
-          <!-- Circles -->
-          <div class="absolute -top-24 -left-24 w-96 h-96 bg-gradient-to-br from-cyan-100/30 to-blue-100/30 rounded-full blur-3xl"></div>
-          <div class="absolute top-1/2 -right-32 w-80 h-80 bg-gradient-to-br from-blue-100/20 to-purple-100/20 rounded-full blur-3xl"></div>
-          <div class="absolute -bottom-16 left-1/3 w-64 h-64 bg-gradient-to-br from-cyan-50/40 to-blue-50/40 rounded-full blur-2xl"></div>
-
-          <!-- Geometric Shapes -->
-          <svg class="absolute top-20 left-10 w-24 h-24 text-cyan-200/20" fill="none" viewBox="0 0 100 100">
-            <circle cx="50" cy="50" r="40" stroke="currentColor" stroke-width="2" />
-            <circle cx="50" cy="50" r="25" stroke="currentColor" stroke-width="2" />
-          </svg>
-
-          <svg class="absolute bottom-32 right-20 w-32 h-32 text-blue-200/20" fill="none" viewBox="0 0 100 100">
-            <rect x="10" y="10" width="80" height="80" stroke="currentColor" stroke-width="2" transform="rotate(45 50 50)" />
-          </svg>
-
-          <svg class="absolute top-1/3 right-1/4 w-20 h-20 text-purple-200/20" fill="none" viewBox="0 0 100 100">
-            <polygon points="50,10 90,90 10,90" stroke="currentColor" stroke-width="2" />
-          </svg>
-
-          <!-- Dots Pattern -->
-          <div class="absolute top-40 left-1/4 flex gap-3">
-            <div class="w-2 h-2 bg-cyan-300/30 rounded-full"></div>
-            <div class="w-2 h-2 bg-blue-300/30 rounded-full"></div>
-            <div class="w-2 h-2 bg-cyan-300/30 rounded-full"></div>
-          </div>
-
-          <div class="absolute bottom-40 right-1/3 flex gap-3 rotate-90">
-            <div class="w-2 h-2 bg-blue-300/30 rounded-full"></div>
-            <div class="w-2 h-2 bg-purple-300/30 rounded-full"></div>
-            <div class="w-2 h-2 bg-blue-300/30 rounded-full"></div>
-          </div>
+          <div class="absolute -top-48 left-1/2 w-[720px] h-[720px] -translate-x-1/2 bg-gradient-to-br from-cyan-100/35 to-blue-100/25 rounded-full blur-3xl"></div>
         </div>
 
         <div class="max-w-6xl mx-auto relative text-center">
@@ -89,11 +59,11 @@ import { CommonModule } from '@angular/common';
           </div>
 
           <h1 class="text-4xl md:text-6xl lg:text-7xl font-bold text-gradient mb-4 md:mb-6 leading-tight">
-            Gestion bancaire<br class="hidden md:block">nouvelle génération.
+            Plateforme bancaire<br class="hidden md:block">sécurisée et moderne.
           </h1>
 
           <p class="text-lg md:text-xl text-slate-600 max-w-3xl mx-auto mb-8 md:mb-12 leading-relaxed px-4">
-            Une architecture distribuée robuste pour la gestion des comptes clients, transactions sécurisées et conformité bancaire. Propulsé par Java EE, Spring Boot et Angular.
+            Gestion des clients, comptes et opérations (dépôt, retrait, virement) avec contrôle d’accès, traçabilité et règles métier. Backend Spring Boot, Frontend Angular.
           </p>
 
           <div class="flex flex-wrap gap-4 justify-center">
